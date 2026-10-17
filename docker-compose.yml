@@ -1,0 +1,60 @@
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: jobmarket-sqlserver
+
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+
+    ports:
+      - "1433:1433"
+
+    volumes:
+      - jobmarket_sqlserver_data:/var/opt/mssql
+
+    restart: unless-stopped
+
+
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+
+    container_name: jobmarket-airflow
+
+    depends_on:
+      - sqlserver
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+
+      MSSQL_HOST: sqlserver
+      MSSQL_PORT: "1433"
+      MSSQL_DATABASE: JobMarketDWH
+      MSSQL_USER: sa
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_DRIVER: ODBC Driver 17 for SQL Server
+
+      JOOBLE_API_KEY: ${JOOBLE_API_KEY}
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./:/opt/airflow/jobmarket
+      - ./airflow/dags:/opt/airflow/dags
+      - ${USERPROFILE}/.dbt:/opt/airflow/.dbt
+
+    working_dir: /opt/airflow/jobmarket
+
+    command: airflow standalone
+
+    restart: unless-stopped
+
+
+volumes:
+  jobmarket_sqlserver_data:

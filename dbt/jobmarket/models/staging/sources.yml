@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: stg
+    database: JobMarketDWH
+    schema: stg
+
+    tables:
+      - name: JobPostingRaw
+        description: >
+          Raw job posting observations loaded from source-specific
+          collectors and loaders.
+
+      - name: JobPosting
+        description: >
+          Standardized and processed job posting observations.
+
+      - name: JobPostingSkill
+        description: >
+          Skills detected from processed job posting observations.
+
+  - name: dwh
+    database: JobMarketDWH
+    schema: dwh
+
+    tables:
+      - name: DimCompany
+
+      - name: DimLocation
+
+      - name: DimRole
+
+      - name: DimSkill
+
+      - name: FactJobPosting
+
+      - name: FactJobObservation
+
+      - name: BridgeJobPostingSkill

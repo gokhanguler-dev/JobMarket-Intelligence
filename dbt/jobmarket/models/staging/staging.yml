@@ -1,0 +1,99 @@
+version: 2
+
+models:
+
+  # ==========================================================
+  # JOB POSTINGS
+  # Grain: one row per source-level unique job
+  # ==========================================================
+
+  - name: stg_job_postings
+    description: >
+      One row per unique source-level job posting.
+
+    columns:
+      - name: JobPostingKey
+        description: Warehouse surrogate key for the job posting.
+        tests:
+          - not_null
+          - unique
+
+      - name: SourceSystem
+        tests:
+          - not_null
+
+      - name: SourceJobID
+        tests:
+          - not_null
+
+      - name: JobTitle
+        tests:
+          - not_null
+
+      - name: FirstObservedAt
+        tests:
+          - not_null
+
+      - name: LastObservedAt
+        tests:
+          - not_null
+
+
+  # ==========================================================
+  # JOB OBSERVATIONS
+  # Grain: one row per raw observation
+  # ==========================================================
+
+  - name: stg_job_observations
+    description: >
+      Historical observations of job postings captured by collectors.
+
+    columns:
+      - name: JobObservationKey
+        tests:
+          - not_null
+          - unique
+
+      - name: RawJobPostingID
+        tests:
+          - not_null
+          - unique
+
+      - name: JobPostingKey
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_job_postings')
+                field: JobPostingKey
+
+      - name: ObservedAt
+        tests:
+          - not_null
+
+
+  # ==========================================================
+  # JOB SKILLS
+  # Grain: one row per JobPostingKey + SkillKey
+  # ==========================================================
+
+  - name: stg_job_skills
+    description: >
+      Skills detected for each unique source-level job posting.
+
+    columns:
+      - name: JobPostingKey
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_job_postings')
+                field: JobPostingKey
+
+      - name: SkillKey
+        tests:
+          - not_null
+
+      - name: SkillName
+        tests:
+          - not_null

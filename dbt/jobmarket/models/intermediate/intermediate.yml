@@ -1,0 +1,45 @@
+version: 2
+
+models:
+
+  - name: int_job_skills
+    description: >
+      Enriched job-skill relationships used as the reusable
+      business layer for skill analytics.
+
+    columns:
+      - name: JobPostingKey
+        tests:
+          - not_null
+
+      - name: SkillKey
+        tests:
+          - not_null
+
+      - name: SkillName
+        tests:
+          - not_null
+
+      - name: SourceSystem
+        tests:
+          - not_null
+
+
+  - name: int_job_observations
+    description: >
+      Observation-level history aggregated to one row
+      per unique source-level job posting.
+
+    columns:
+      - name: JobPostingKey
+        tests:
+          - not_null
+          - unique
+
+      - name: SourceSystem
+        tests:
+          - not_null
+
+      - name: ObservationCount
+        tests:
+          - not_null

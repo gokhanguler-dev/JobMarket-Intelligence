@@ -1,0 +1,60 @@
+import json
+import re
+from pathlib import Path
+
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+TAXONOMY_PATH = (
+    BASE_DIR
+    / "config"
+    / "skill_taxonomy.json"
+)
+
+
+def load_skill_taxonomy():
+
+    with open(
+        TAXONOMY_PATH,
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        return json.load(file)
+
+
+def contains_alias(text, alias):
+
+    pattern = (
+        r"(?<!\w)"
+        + re.escape(alias.lower())
+        + r"(?!\w)"
+    )
+
+    return bool(
+        re.search(pattern, text.lower())
+    )
+
+
+def extract_skills(text):
+
+    if not text:
+        return []
+
+    taxonomy = load_skill_taxonomy()
+
+    detected_skills = []
+
+    for canonical_skill, aliases in taxonomy.items():
+
+        for alias in aliases:
+
+            if contains_alias(text, alias):
+
+                detected_skills.append(
+                    canonical_skill
+                )
+
+                break
+
+    return detected_skills

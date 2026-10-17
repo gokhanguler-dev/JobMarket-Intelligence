@@ -1,0 +1,43 @@
+{
+  "Intern": [
+    "intern",
+    "internship"
+  ],
+
+  "Junior": [
+    "junior",
+    "jr",
+    "jr."
+  ],
+
+  "Mid": [
+    "mid",
+    "mid-level",
+    "middle"
+  ],
+
+  "Senior": [
+    "senior",
+    "sr",
+    "sr."
+  ],
+
+  "Lead": [
+    "lead",
+    "tech lead",
+    "technical lead"
+  ],
+
+  "Principal": [
+    "principal"
+  ],
+
+  "Staff": [
+    "staff"
+  ],
+
+  "Manager": [
+    "manager",
+    "engineering manager"
+  ]
+}

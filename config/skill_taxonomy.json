@@ -1,0 +1,127 @@
+{
+  "SQL": [
+    "sql"
+  ],
+  "Python": [
+    "python"
+  ],
+  "Scala": [
+    "scala"
+  ],
+  "Java": [
+    "java"
+  ],
+  "Spark": [
+    "apache spark",
+    "spark"
+  ],
+  "PySpark": [
+    "pyspark",
+    "py spark"
+  ],
+  "Kafka": [
+    "apache kafka",
+    "kafka"
+  ],
+  "Airflow": [
+    "apache airflow",
+    "airflow"
+  ],
+  "dbt": [
+    "dbt",
+    "data build tool"
+  ],
+  "Databricks": [
+    "databricks"
+  ],
+  "Snowflake": [
+    "snowflake"
+  ],
+  "BigQuery": [
+    "bigquery",
+    "google bigquery"
+  ],
+  "Redshift": [
+    "redshift",
+    "amazon redshift"
+  ],
+  "Azure": [
+    "microsoft azure",
+    "azure"
+  ],
+  "AWS": [
+    "amazon web services",
+    "aws"
+  ],
+  "GCP": [
+    "google cloud platform",
+    "google cloud",
+    "gcp"
+  ],
+  "Azure Data Factory": [
+    "azure data factory",
+    "adf"
+  ],
+  "Azure Synapse": [
+    "azure synapse",
+    "synapse analytics"
+  ],
+  "Microsoft Fabric": [
+    "microsoft fabric"
+  ],
+  "SQL Server": [
+    "sql server",
+    "mssql",
+    "microsoft sql server"
+  ],
+  "PostgreSQL": [
+    "postgresql",
+    "postgres"
+  ],
+  "Oracle": [
+    "oracle"
+  ],
+  "SSIS": [
+    "ssis",
+    "sql server integration services"
+  ],
+  "SSAS": [
+    "ssas",
+    "sql server analysis services"
+  ],
+  "Power BI": [
+    "power bi",
+    "powerbi"
+  ],
+  "Docker": [
+    "docker"
+  ],
+  "Kubernetes": [
+    "kubernetes",
+    "k8s"
+  ],
+  "Terraform": [
+    "terraform"
+  ],
+  "Git": [
+    "git"
+  ],
+  "Talend": [
+    "talend"
+  ],
+  "LangChain": [
+    "langchain"
+  ],
+  "LangGraph": [
+    "langgraph"
+  ],
+  "AutoGen": [
+    "autogen"
+  ],
+  "Azure AI Foundry": [
+    "azure ai foundry"
+  ],
+  "Semantic Kernel": [
+    "semantic kernel"
+  ]
+}

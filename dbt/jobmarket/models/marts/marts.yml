@@ -1,0 +1,225 @@
+version: 2
+
+models:
+
+  # ==========================================================
+  # SKILL DEMAND
+  # Grain: one row per skill
+  # ==========================================================
+
+  - name: mart_skill_demand
+    description: >
+      Overall market demand for each detected skill across
+      unique source-level job postings.
+
+    columns:
+
+      - name: SkillKey
+        tests:
+          - not_null
+          - unique
+
+      - name: SkillName
+        tests:
+          - not_null
+          - unique
+
+      - name: JobCount
+        tests:
+          - not_null
+
+      - name: CompanyCount
+        tests:
+          - not_null
+
+      - name: SourceCount
+        tests:
+          - not_null
+
+      - name: TotalJobCount
+        tests:
+          - not_null
+
+      - name: DemandPercentage
+        tests:
+          - not_null
+
+
+  # ==========================================================
+  # ROLE SKILL DEMAND
+  # Grain: one row per role + skill
+  # ==========================================================
+
+  - name: mart_role_skill_demand
+    description: >
+      Skill demand within each normalized job role.
+
+    columns:
+
+      - name: RoleName
+        tests:
+          - not_null
+
+      - name: SkillKey
+        tests:
+          - not_null
+
+      - name: SkillName
+        tests:
+          - not_null
+
+      - name: JobCount
+        tests:
+          - not_null
+
+      - name: CompanyCount
+        tests:
+          - not_null
+
+      - name: SourceCount
+        tests:
+          - not_null
+
+      - name: RoleJobCount
+        tests:
+          - not_null
+
+      - name: RoleDemandPercentage
+        tests:
+          - not_null
+
+
+  # ==========================================================
+  # COMPANY TECH STACK
+  # Grain: one row per company + skill
+  # ==========================================================
+
+  - name: mart_company_tech_stack
+    description: >
+      Technology and skill demand aggregated by company.
+
+    columns:
+
+      - name: CompanyName
+        tests:
+          - not_null
+
+      - name: SkillKey
+        tests:
+          - not_null
+
+      - name: SkillName
+        tests:
+          - not_null
+
+      - name: JobCount
+        tests:
+          - not_null
+
+      - name: RoleCount
+        tests:
+          - not_null
+
+      - name: SourceCount
+        tests:
+          - not_null
+
+      - name: FirstObservedAt
+        tests:
+          - not_null
+
+      - name: LastObservedAt
+        tests:
+          - not_null
+
+
+  # ==========================================================
+  # SOURCE QUALITY
+  # Grain: one row per source system
+  # ==========================================================
+
+  - name: mart_source_quality
+    description: >
+      Data quality and coverage metrics for each job posting source.
+
+    columns:
+
+      - name: SourceSystem
+        tests:
+          - not_null
+          - unique
+
+      - name: JobCount
+        tests:
+          - not_null
+
+      - name: ObservationCount
+        tests:
+          - not_null
+
+      - name: JobsWithSkillCount
+        tests:
+          - not_null
+
+      - name: JobSkillPairCount
+        tests:
+          - not_null
+
+      - name: ClassifiedJobCount
+        tests:
+          - not_null
+
+      - name: JobsWithCompanyCount
+        tests:
+          - not_null
+
+      - name: SkillCoveragePercentage
+        tests:
+          - not_null
+
+      - name: RoleClassificationPercentage
+        tests:
+          - not_null
+
+      - name: CompanyCoveragePercentage
+        tests:
+          - not_null
+
+      - name: AvgObservationsPerJob
+        tests:
+          - not_null
+  # ==========================================================
+  # SKILL TREND
+  # Grain: one row per observation date + skill
+  # ==========================================================
+
+  - name: mart_skill_trend
+    description: >
+      Daily skill demand based on unique job postings observed
+      by the pipeline on each observation date.
+
+    columns:
+
+      - name: ObservationDate
+        tests:
+          - not_null
+
+      - name: SkillKey
+        tests:
+          - not_null
+
+      - name: SkillName
+        tests:
+          - not_null
+
+      - name: JobCount
+        tests:
+          - not_null
+
+      - name: ObservedJobCount
+        tests:
+          - not_null
+
+      - name: DemandPercentage
+        tests:
+          - not_null
