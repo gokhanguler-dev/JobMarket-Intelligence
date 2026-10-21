@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
@@ -46,7 +46,9 @@ with DAG(
         "jobmarket",
         "jooble",
         "etl",
-        "dbt"
+        "classification",
+        "dbt",
+        "publisher",
     ],
 ) as dag:
 
@@ -109,7 +111,21 @@ with DAG(
     )
 
     # --------------------------------------------------------
-    # 5. DBT BUILD
+    # 5. CLASSIFY JOBS
+    # --------------------------------------------------------
+
+    classify_jobs = BashOperator(
+        task_id="classify_jobs",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m "
+            "ingestion.loaders.job_classification_loader "
+            "--apply"
+        ),
+    )
+
+    # --------------------------------------------------------
+    # 6. DBT BUILD
     # --------------------------------------------------------
 
     dbt_build = BashOperator(
@@ -122,6 +138,19 @@ with DAG(
     )
 
     # --------------------------------------------------------
+    # 7. PUBLISH WEB DATA
+    # --------------------------------------------------------
+
+    publish_web_data = BashOperator(
+        task_id="publish_web_data",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m "
+            "ingestion.publishers.web_data_publisher"
+        ),
+    )
+
+    # --------------------------------------------------------
     # DEPENDENCIES
     # --------------------------------------------------------
 
@@ -130,5 +159,7 @@ with DAG(
         >> load_jooble_raw
         >> transform_staging
         >> load_dwh
+        >> classify_jobs
         >> dbt_build
+        >> publish_web_data
     )

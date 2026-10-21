@@ -1,13 +1,21 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 import pendulum
 
 
+# ============================================================
+# PATHS
+# ============================================================
+
 PROJECT_DIR = "/opt/airflow/jobmarket"
 DBT_DIR = f"{PROJECT_DIR}/dbt/jobmarket"
 
+
+# ============================================================
+# DEFAULT ARGUMENTS
+# ============================================================
 
 default_args = {
     "owner": "gokhan",
@@ -16,6 +24,10 @@ default_args = {
     "retry_delay": timedelta(minutes=2),
 }
 
+
+# ============================================================
+# DAG
+# ============================================================
 
 with DAG(
     dag_id="jobmarket_daily_pipeline",
@@ -27,8 +39,18 @@ with DAG(
     ),
     schedule="0 8 * * *",
     catchup=False,
-    tags=["jobmarket", "etl", "dbt"],
+    tags=[
+        "jobmarket",
+        "etl",
+        "classification",
+        "dbt",
+        "publisher",
+    ],
 ) as dag:
+
+    # --------------------------------------------------------
+    # 1. COLLECT SOURCES
+    # --------------------------------------------------------
 
     collect_akbank = BashOperator(
         task_id="collect_akbank",
@@ -46,6 +68,10 @@ with DAG(
         ),
     )
 
+    # --------------------------------------------------------
+    # 2. LOAD RAW
+    # --------------------------------------------------------
+
     load_akbank_raw = BashOperator(
         task_id="load_akbank_raw",
         bash_command=(
@@ -62,6 +88,10 @@ with DAG(
         ),
     )
 
+    # --------------------------------------------------------
+    # 3. TRANSFORM STAGING
+    # --------------------------------------------------------
+
     transform_staging = BashOperator(
         task_id="transform_staging",
         bash_command=(
@@ -70,6 +100,10 @@ with DAG(
         ),
     )
 
+    # --------------------------------------------------------
+    # 4. LOAD DWH
+    # --------------------------------------------------------
+
     load_dwh = BashOperator(
         task_id="load_dwh",
         bash_command=(
@@ -77,6 +111,24 @@ with DAG(
             "python -m ingestion.loaders.dwh_loader"
         ),
     )
+
+    # --------------------------------------------------------
+    # 5. CLASSIFY JOBS
+    # --------------------------------------------------------
+
+    classify_jobs = BashOperator(
+        task_id="classify_jobs",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m "
+            "ingestion.loaders.job_classification_loader "
+            "--apply"
+        ),
+    )
+
+    # --------------------------------------------------------
+    # 6. DBT BUILD
+    # --------------------------------------------------------
 
     dbt_build = BashOperator(
         task_id="dbt_build",
@@ -87,6 +139,22 @@ with DAG(
         ),
     )
 
+    # --------------------------------------------------------
+    # 7. PUBLISH WEB DATA
+    # --------------------------------------------------------
+
+    publish_web_data = BashOperator(
+        task_id="publish_web_data",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m "
+            "ingestion.publishers.web_data_publisher"
+        ),
+    )
+
+    # --------------------------------------------------------
+    # DEPENDENCIES
+    # --------------------------------------------------------
 
     collect_akbank >> load_akbank_raw
     collect_lever >> load_lever_raw
@@ -96,4 +164,10 @@ with DAG(
         load_lever_raw,
     ] >> transform_staging
 
-    transform_staging >> load_dwh >> dbt_build
+    (
+        transform_staging
+        >> load_dwh
+        >> classify_jobs
+        >> dbt_build
+        >> publish_web_data
+    )

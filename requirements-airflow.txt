@@ -2,5 +2,6 @@ requests
 python-dotenv
 beautifulsoup4
 pyodbc
+psycopg2-binary
 dbt-core==1.10.23
 dbt-sqlserver==1.9.2

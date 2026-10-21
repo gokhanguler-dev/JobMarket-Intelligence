@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JobMarket Intelligence",
+  title: "Tech Job Market Intelligence",
   description:
-    "Data-driven intelligence on technology demand across Turkey's data job market.",
+    "Data-driven intelligence on technology roles, skills and career demand across Turkey's tech job market.",
 };
 
 export default function RootLayout({

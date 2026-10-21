@@ -9,32 +9,137 @@ models:
 
   - name: stg_job_postings
     description: >
-      One row per unique source-level job posting.
+      One row per unique source-level job posting enriched
+      with company, location, role, career area and production
+      classification attributes.
 
     columns:
+
+      # ------------------------------------------------------
+      # PRIMARY IDENTIFIER
+      # ------------------------------------------------------
+
       - name: JobPostingKey
-        description: Warehouse surrogate key for the job posting.
+        description: >
+          Warehouse surrogate key for the canonical job posting.
         tests:
           - not_null
           - unique
 
+
+      # ------------------------------------------------------
+      # SOURCE IDENTIFIERS
+      # ------------------------------------------------------
+
       - name: SourceSystem
+        description: >
+          Source system from which the job posting originated.
         tests:
           - not_null
 
       - name: SourceJobID
+        description: >
+          Job identifier assigned by the source system.
         tests:
           - not_null
 
+
+      # ------------------------------------------------------
+      # JOB ATTRIBUTES
+      # ------------------------------------------------------
+
       - name: JobTitle
+        description: >
+          Original job title supplied by the source.
         tests:
           - not_null
 
       - name: FirstObservedAt
+        description: >
+          Timestamp when the job posting was first observed
+          by the ingestion platform.
         tests:
           - not_null
 
       - name: LastObservedAt
+        description: >
+          Timestamp when the job posting was most recently
+          observed by the ingestion platform.
+        tests:
+          - not_null
+
+
+      # ------------------------------------------------------
+      # JOB CLASSIFICATION V4.2
+      # ------------------------------------------------------
+
+      - name: IsTechRole
+        description: >
+          Final classification status produced by the
+          production Job Classification V4.2 pipeline.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Tech
+                  - Non-Tech
+                  - Ambiguous
+
+
+      - name: CareerAreaKey
+        description: >
+          Foreign key identifying the career area assigned
+          to the job posting.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: source('dwh', 'DimCareerArea')
+                field: CareerAreaKey
+
+
+      - name: CareerAreaName
+        description: >
+          Career area assigned by the production classifier.
+          Tech jobs are mapped to a technology career area,
+          Non-Tech jobs are mapped to Out of Scope, and
+          unresolved jobs are mapped to Unknown.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Data & Analytics
+                  - AI & Machine Learning
+                  - Software Engineering
+                  - Cloud, DevOps & Platform
+                  - Cybersecurity
+                  - Enterprise Applications
+                  - IT Operations & Support
+                  - Other Tech
+                  - Out of Scope
+                  - Unknown
+
+
+      - name: ClassificationConfidence
+        description: >
+          Confidence level assigned to the final job
+          classification.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - High
+                  - Medium
+                  - Low
+
+
+      - name: ClassificationVersion
+        description: >
+          Version of the production job classification
+          pipeline used for this record.
         tests:
           - not_null
 
@@ -46,20 +151,28 @@ models:
 
   - name: stg_job_observations
     description: >
-      Historical observations of job postings captured by collectors.
+      Historical observations of job postings captured
+      by collectors.
 
     columns:
+
       - name: JobObservationKey
+        description: >
+          Warehouse surrogate key for the observation.
         tests:
           - not_null
           - unique
 
       - name: RawJobPostingID
+        description: >
+          Identifier of the originating raw observation.
         tests:
           - not_null
           - unique
 
       - name: JobPostingKey
+        description: >
+          Foreign key to the canonical job posting.
         tests:
           - not_null
           - relationships:
@@ -68,6 +181,9 @@ models:
                 field: JobPostingKey
 
       - name: ObservedAt
+        description: >
+          Timestamp when the raw job observation
+          was captured.
         tests:
           - not_null
 
@@ -79,10 +195,14 @@ models:
 
   - name: stg_job_skills
     description: >
-      Skills detected for each unique source-level job posting.
+      Skills detected for each unique source-level
+      job posting.
 
     columns:
+
       - name: JobPostingKey
+        description: >
+          Foreign key to the canonical job posting.
         tests:
           - not_null
           - relationships:
@@ -91,9 +211,13 @@ models:
                 field: JobPostingKey
 
       - name: SkillKey
+        description: >
+          Warehouse surrogate key for the detected skill.
         tests:
           - not_null
 
       - name: SkillName
+        description: >
+          Canonical name of the detected skill.
         tests:
           - not_null

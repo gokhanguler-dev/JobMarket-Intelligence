@@ -4,6 +4,13 @@
     "internship"
   ],
 
+  "New Grad": [
+    "new grad",
+    "new graduate",
+    "graduate program",
+    "graduates program"
+  ],
+
   "Junior": [
     "junior",
     "jr",
@@ -13,6 +20,7 @@
   "Mid": [
     "mid",
     "mid-level",
+    "mid level",
     "middle"
   ],
 
@@ -25,7 +33,9 @@
   "Lead": [
     "lead",
     "tech lead",
-    "technical lead"
+    "technical lead",
+    "team lead",
+    "chapter lead"
   ],
 
   "Principal": [
@@ -39,5 +49,18 @@
   "Manager": [
     "manager",
     "engineering manager"
+  ],
+
+  "Head": [
+    "head of"
+  ],
+
+  "Director": [
+    "director"
+  ],
+
+  "VP": [
+    "vp",
+    "vice president"
   ]
 }

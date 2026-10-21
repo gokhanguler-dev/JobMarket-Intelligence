@@ -4,6 +4,31 @@
       "site": "trendyol",
       "company": "Trendyol",
       "enabled": true
+    },
+    {
+      "site": "getmidas",
+      "company": "Midas",
+      "enabled": true
+    },
+    {
+      "site": "iyzico",
+      "company": "iyzico",
+      "enabled": true
+    },
+    {
+      "site": "dreamgames",
+      "company": "Dream Games",
+      "enabled": true
+    },
+    {
+      "site": "appnation",
+      "company": "AppNation",
+      "enabled": true
+    },
+    {
+      "site": "insiderone",
+      "company": "Insider One",
+      "enabled": true
     }
   ]
 }

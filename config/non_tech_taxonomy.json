@@ -1,0 +1,109 @@
+{
+  "Sales": [
+    "account executive",
+    "account director",
+    "account manager",
+    "inside sales specialist",
+    "sales development representative",
+    "business development representative",
+    "sales manager",
+    "enterprise sales manager",
+    "digital sales development representative",
+    "sales team lead",
+    "partnership manager",
+    "channel manager",
+    "commercial director",
+    "commercial partnerships",
+    "seller acquisition",
+    "key account manager"
+  ],
+
+  "Marketing": [
+    "marketing manager",
+    "marketing communications",
+    "content marketing specialist",
+    "performance marketer",
+    "field marketing manager",
+    "partner marketing manager",
+    "brand manager",
+    "event specialist",
+    "etkinlik ve sponsorluk",
+    "kurumsal pazarlama",
+    "bankasürans pazarlama",
+    "yatırım hizmetleri pazarlama"
+  ],
+
+  "Finance & Accounting": [
+    "financial analyst",
+    "fp&a analyst",
+    "accounting specialist",
+    "accounting professionals",
+    "tax & accounting",
+    "treasury professionals",
+    "finance & operations manager",
+    "kredi analiz yöneticisi",
+    "kredi tahsis yöneticisi",
+    "yatırımcı ilişkileri"
+  ],
+
+  "Human Resources": [
+    "talent acquisition",
+    "talent researcher",
+    "payroll professionals",
+    "hr shared services",
+    "people experience",
+    "talent & culture",
+    "workplace & experience"
+  ],
+
+  "Legal & Compliance": [
+    "legal counsel",
+    "legal & compliance counsel",
+    "compliance analyst",
+    "regulatory analyst",
+    "corporate governance analyst",
+    "immigration analyst",
+    "data privacy partner",
+    "contract and vendor management analyst",
+    "iç kontrol ve risk müdürü"
+  ],
+
+  "Customer Success": [
+    "customer success manager",
+    "customer onboarding manager",
+    "customer onboarding intern",
+    "customer service officer"
+  ],
+
+  "Retail & Marketplace": [
+    "category manager",
+    "category lead",
+    "account and category management",
+    "marketplace development lead",
+    "seller operations graduate",
+    "fmcg & cosmetics manager"
+  ],
+
+  "Logistics & Field Operations": [
+    "trendyol express - bölge yöneticisi",
+    "trendyol express - şube lideri",
+    "trendyol express - dağıtım merkezi operasyon yöneticisi"
+  ],
+
+  "Creative & Design": [
+    "motion designer",
+    "senior digital designer",
+    "marketing illustrator",
+    "grafiker",
+    "creative director",
+    "head of video"
+  ],
+
+  "Administrative & Other": [
+    "executive assistant",
+    "administrative affairs",
+    "private tutor",
+    "executive chef",
+    "machine operator"
+  ]
+}

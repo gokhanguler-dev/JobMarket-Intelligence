@@ -2,24 +2,137 @@ version: 2
 
 models:
 
-  # ==========================================================
-  # SKILL DEMAND
-  # Grain: one row per skill
-  # ==========================================================
+  # ============================================================
+  # MART: SKILL DEMAND
+  # ============================================================
 
   - name: mart_skill_demand
     description: >
-      Overall market demand for each detected skill across
-      unique source-level job postings.
+      Aggregated technology and skill demand across canonical
+      job postings.
 
     columns:
-
-      - name: SkillKey
+      - name: SkillName
         tests:
           - not_null
           - unique
 
+      - name: JobCount
+        tests:
+          - not_null
+
+      - name: CompanyCount
+        tests:
+          - not_null
+
+
+  # ============================================================
+  # MART: ROLE SKILL DEMAND
+  # ============================================================
+
+  - name: mart_role_skill_demand
+    description: >
+      Skill demand aggregated by normalized job role.
+      Used to understand which technologies are most frequently
+      requested for each role.
+
+    columns:
+      - name: RoleName
+        tests:
+          - not_null
+
       - name: SkillName
+        tests:
+          - not_null
+
+      - name: JobCount
+        tests:
+          - not_null
+
+      - name: CompanyCount
+        tests:
+          - not_null
+
+
+  # ============================================================
+  # MART: COMPANY TECH STACK
+  # ============================================================
+
+  - name: mart_company_tech_stack
+    description: >
+      Technology demand aggregated by company.
+      Provides an approximation of the technology stack visible
+      in each company's job postings.
+
+    columns:
+      - name: CompanyName
+        tests:
+          - not_null
+
+      - name: SkillName
+        tests:
+          - not_null
+
+      - name: JobCount
+        tests:
+          - not_null
+
+
+  # ============================================================
+  # MART: SOURCE QUALITY
+  # ============================================================
+
+  - name: mart_source_quality
+    description: >
+      Data quality and coverage metrics by source system.
+      Used to monitor ingestion quality across job data sources.
+
+    columns:
+      - name: SourceSystem
+        tests:
+          - not_null
+          - unique
+
+      - name: JobCount
+        tests:
+          - not_null
+
+
+  # ============================================================
+  # MART: SKILL TREND
+  # ============================================================
+
+  - name: mart_skill_trend
+    description: >
+      Time-based skill demand derived from job observations.
+      Used to analyze changes in technology demand over time.
+
+    columns:
+      - name: SkillName
+        tests:
+          - not_null
+
+      - name: ObservationDate
+        tests:
+          - not_null
+
+      - name: JobCount
+        tests:
+          - not_null
+
+
+  # ============================================================
+  # MART: CAREER AREA OVERVIEW
+  # ============================================================
+
+  - name: mart_career_area_overview
+    description: >
+      High-level technology job market distribution by Career Area.
+      Includes job counts, company coverage, source coverage,
+      classification confidence and market share.
+
+    columns:
+      - name: CareerAreaName
         tests:
           - not_null
           - unique
@@ -36,35 +149,56 @@ models:
         tests:
           - not_null
 
-      - name: TotalJobCount
+      - name: HighConfidenceJobCount
         tests:
           - not_null
 
-      - name: DemandPercentage
+      - name: MediumConfidenceJobCount
+        tests:
+          - not_null
+
+      - name: LowConfidenceJobCount
+        tests:
+          - not_null
+
+      - name: TotalTechJobCount
+        tests:
+          - not_null
+
+      - name: JobSharePercentage
+        tests:
+          - not_null
+
+      - name: FirstObservedAt
+        tests:
+          - not_null
+
+      - name: LastObservedAt
         tests:
           - not_null
 
 
-  # ==========================================================
-  # ROLE SKILL DEMAND
-  # Grain: one row per role + skill
-  # ==========================================================
+  # ============================================================
+  # MART: ROLE × SENIORITY DEMAND
+  # ============================================================
 
-  - name: mart_role_skill_demand
+  - name: mart_role_seniority_demand
     description: >
-      Skill demand within each normalized job role.
+      Technology job demand aggregated by Career Area,
+      normalized Role and Seniority. Provides role-level,
+      Career Area-level and total technology market demand
+      metrics for Career Intelligence analytics.
 
     columns:
+      - name: CareerAreaName
+        tests:
+          - not_null
 
       - name: RoleName
         tests:
           - not_null
 
-      - name: SkillKey
-        tests:
-          - not_null
-
-      - name: SkillName
+      - name: Seniority
         tests:
           - not_null
 
@@ -84,43 +218,23 @@ models:
         tests:
           - not_null
 
-      - name: RoleDemandPercentage
+      - name: CareerAreaJobCount
         tests:
           - not_null
 
-
-  # ==========================================================
-  # COMPANY TECH STACK
-  # Grain: one row per company + skill
-  # ==========================================================
-
-  - name: mart_company_tech_stack
-    description: >
-      Technology and skill demand aggregated by company.
-
-    columns:
-
-      - name: CompanyName
+      - name: TotalTechJobCount
         tests:
           - not_null
 
-      - name: SkillKey
+      - name: SeniorityShareWithinRole
         tests:
           - not_null
 
-      - name: SkillName
+      - name: DemandShareWithinCareerArea
         tests:
           - not_null
 
-      - name: JobCount
-        tests:
-          - not_null
-
-      - name: RoleCount
-        tests:
-          - not_null
-
-      - name: SourceCount
+      - name: TechMarketShare
         tests:
           - not_null
 
@@ -129,97 +243,5 @@ models:
           - not_null
 
       - name: LastObservedAt
-        tests:
-          - not_null
-
-
-  # ==========================================================
-  # SOURCE QUALITY
-  # Grain: one row per source system
-  # ==========================================================
-
-  - name: mart_source_quality
-    description: >
-      Data quality and coverage metrics for each job posting source.
-
-    columns:
-
-      - name: SourceSystem
-        tests:
-          - not_null
-          - unique
-
-      - name: JobCount
-        tests:
-          - not_null
-
-      - name: ObservationCount
-        tests:
-          - not_null
-
-      - name: JobsWithSkillCount
-        tests:
-          - not_null
-
-      - name: JobSkillPairCount
-        tests:
-          - not_null
-
-      - name: ClassifiedJobCount
-        tests:
-          - not_null
-
-      - name: JobsWithCompanyCount
-        tests:
-          - not_null
-
-      - name: SkillCoveragePercentage
-        tests:
-          - not_null
-
-      - name: RoleClassificationPercentage
-        tests:
-          - not_null
-
-      - name: CompanyCoveragePercentage
-        tests:
-          - not_null
-
-      - name: AvgObservationsPerJob
-        tests:
-          - not_null
-  # ==========================================================
-  # SKILL TREND
-  # Grain: one row per observation date + skill
-  # ==========================================================
-
-  - name: mart_skill_trend
-    description: >
-      Daily skill demand based on unique job postings observed
-      by the pipeline on each observation date.
-
-    columns:
-
-      - name: ObservationDate
-        tests:
-          - not_null
-
-      - name: SkillKey
-        tests:
-          - not_null
-
-      - name: SkillName
-        tests:
-          - not_null
-
-      - name: JobCount
-        tests:
-          - not_null
-
-      - name: ObservedJobCount
-        tests:
-          - not_null
-
-      - name: DemandPercentage
         tests:
           - not_null

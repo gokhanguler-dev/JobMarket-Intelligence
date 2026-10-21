@@ -1,0 +1,352 @@
+{
+  "version": "1.0",
+  "capabilities": {
+    "Data Pipeline Engineering": {
+      "career_areas": [
+        "Data & Analytics",
+        "AI & Machine Learning"
+      ],
+      "roles": [
+        "Data Engineer",
+        "Analytics Engineer",
+        "Data Architect",
+        "AI Engineer",
+        "Machine Learning Engineer"
+      ]
+    },
+
+    "ETL/ELT Development": {
+      "career_areas": [
+        "Data & Analytics"
+      ],
+      "roles": [
+        "Data Engineer",
+        "Analytics Engineer",
+        "BI Developer",
+        "SQL Developer"
+      ]
+    },
+
+    "Data Modeling": {
+      "career_areas": [
+        "Data & Analytics",
+        "Enterprise Applications"
+      ],
+      "roles": [
+        "Data Engineer",
+        "Data Architect",
+        "Analytics Engineer",
+        "BI Developer",
+        "SAP Consultant",
+        "SAP Developer"
+      ]
+    },
+
+    "Data Warehouse Engineering": {
+      "career_areas": [
+        "Data & Analytics"
+      ],
+      "roles": [
+        "Data Engineer",
+        "Data Architect",
+        "BI Developer",
+        "Analytics Engineer"
+      ]
+    },
+
+    "Data Transformation": {
+      "career_areas": [
+        "Data & Analytics"
+      ],
+      "roles": [
+        "Data Engineer",
+        "Analytics Engineer",
+        "Data Analyst",
+        "BI Developer"
+      ]
+    },
+
+    "Data Workflow Automation": {
+      "career_areas": [
+        "Data & Analytics",
+        "AI & Machine Learning"
+      ],
+      "roles": [
+        "Data Engineer",
+        "Analytics Engineer",
+        "AI Engineer",
+        "Machine Learning Engineer"
+      ]
+    },
+
+    "Data Product Development": {
+      "career_areas": [
+        "Data & Analytics",
+        "AI & Machine Learning"
+      ],
+      "roles": [
+        "Data Engineer",
+        "Analytics Engineer",
+        "AI Engineer",
+        "Machine Learning Engineer"
+      ]
+    },
+
+    "Data Analysis": {
+      "career_areas": [
+        "Data & Analytics",
+        "AI & Machine Learning"
+      ],
+      "roles": [
+        "Data Analyst",
+        "BI Analyst",
+        "Data Scientist",
+        "Analytics Manager",
+        "Data Consultant"
+      ]
+    },
+
+    "AI/ML Engineering": {
+      "career_areas": [
+        "AI & Machine Learning"
+      ],
+      "roles": [
+        "AI Engineer",
+        "Machine Learning Engineer",
+        "Data Scientist",
+        "AI Architect"
+      ]
+    },
+
+    "AI Workflow Engineering": {
+      "career_areas": [
+        "AI & Machine Learning",
+        "Data & Analytics"
+      ],
+      "roles": [
+        "AI Engineer",
+        "Machine Learning Engineer",
+        "AI Architect",
+        "Data Engineer"
+      ]
+    },
+
+    "Application Development": {
+      "career_areas": [
+        "Software Engineering",
+        "Enterprise Applications"
+      ],
+      "roles": [
+        "Software Engineer",
+        "Full Stack Developer",
+        "SAP Developer",
+        "Salesforce Developer",
+        "Dynamics Developer"
+      ]
+    },
+
+    "Backend Development": {
+      "career_areas": [
+        "Software Engineering"
+      ],
+      "roles": [
+        "Backend Developer",
+        "Software Engineer",
+        "Full Stack Developer"
+      ]
+    },
+
+    "Frontend Development": {
+      "career_areas": [
+        "Software Engineering"
+      ],
+      "roles": [
+        "Frontend Developer",
+        "Full Stack Developer",
+        "Software Engineer"
+      ]
+    },
+
+    "Mobile Application Development": {
+      "career_areas": [
+        "Software Engineering"
+      ],
+      "roles": [
+        "Mobile Developer"
+      ]
+    },
+
+    "API Development & Integration": {
+      "career_areas": [
+        "Software Engineering",
+        "Enterprise Applications"
+      ],
+      "roles": [
+        "Backend Developer",
+        "Software Engineer",
+        "Full Stack Developer",
+        "SAP Integration Engineer",
+        "Salesforce Developer"
+      ]
+    },
+
+    "Software Architecture & System Design": {
+      "career_areas": [
+        "Software Engineering",
+        "Cloud, DevOps & Platform",
+        "Enterprise Applications"
+      ],
+      "roles": [
+        "Software Architect",
+        "Software Engineer",
+        "Cloud Architect",
+        "Salesforce Architect",
+        "AI Architect",
+        "Data Architect"
+      ]
+    },
+
+    "Distributed Systems Engineering": {
+      "career_areas": [
+        "Software Engineering",
+        "Cloud, DevOps & Platform"
+      ],
+      "roles": [
+        "Software Engineer",
+        "Backend Developer",
+        "Systems Engineer",
+        "Platform Engineer",
+        "Cloud Architect"
+      ]
+    },
+
+    "Cloud Infrastructure Engineering": {
+      "career_areas": [
+        "Cloud, DevOps & Platform"
+      ],
+      "roles": [
+        "DevOps Engineer",
+        "Cloud Engineer",
+        "Cloud Architect",
+        "Platform Engineer",
+        "Network Engineer"
+      ]
+    },
+
+    "Infrastructure Automation": {
+      "career_areas": [
+        "Cloud, DevOps & Platform"
+      ],
+      "roles": [
+        "DevOps Engineer",
+        "Cloud Engineer",
+        "Platform Engineer",
+        "Cloud Architect"
+      ]
+    },
+
+    "CI/CD & Release Engineering": {
+      "career_areas": [
+        "Cloud, DevOps & Platform",
+        "Software Engineering"
+      ],
+      "roles": [
+        "DevOps Engineer",
+        "Platform Engineer",
+        "Software Engineer",
+        "Backend Developer",
+        "Frontend Developer",
+        "Mobile Developer",
+        "Full Stack Developer"
+      ]
+    },
+
+    "Monitoring & Observability": {
+      "career_areas": [
+        "Cloud, DevOps & Platform",
+        "Software Engineering",
+        "Data & Analytics"
+      ],
+      "roles": [
+        "Observability Engineer",
+        "DevOps Engineer",
+        "Platform Engineer",
+        "Cloud Engineer",
+        "Software Engineer",
+        "Data Engineer"
+      ]
+    },
+
+    "Incident Management": {
+      "career_areas": [
+        "Cloud, DevOps & Platform",
+        "IT Operations & Support",
+        "Software Engineering"
+      ],
+      "roles": [
+        "DevOps Engineer",
+        "Platform Engineer",
+        "IT Operations",
+        "Software Engineer"
+      ]
+    },
+
+    "Performance & Scalability Engineering": {
+      "career_areas": [
+        "Cloud, DevOps & Platform",
+        "Software Engineering"
+      ],
+      "roles": [
+        "DevOps Engineer",
+        "Cloud Engineer",
+        "Platform Engineer",
+        "Software Engineer",
+        "Backend Developer",
+        "Systems Engineer"
+      ]
+    },
+
+    "Testing & Quality Engineering": {
+      "career_areas": [
+        "Software Engineering"
+      ],
+      "roles": [
+        "QA Engineer",
+        "Software Engineer",
+        "Game Developer",
+        "Backend Developer",
+        "Frontend Developer",
+        "Mobile Developer"
+      ]
+    },
+
+    "Security Engineering": {
+      "career_areas": [
+        "Cybersecurity",
+        "Cloud, DevOps & Platform",
+        "Software Engineering"
+      ],
+      "roles": [
+        "Security Engineer",
+        "Security Analyst",
+        "DevOps Engineer",
+        "Cloud Engineer",
+        "Software Engineer"
+      ]
+    },
+
+    "Troubleshooting & Technical Support": {
+      "career_areas": [
+        "IT Operations & Support",
+        "Cloud, DevOps & Platform"
+      ],
+      "roles": [
+        "IT Operations",
+        "IT Support",
+        "DevOps Engineer",
+        "Cloud Engineer",
+        "Network Engineer"
+      ]
+    }
+  }
+}

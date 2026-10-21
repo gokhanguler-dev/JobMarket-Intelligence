@@ -1,10 +1,10 @@
 # JobMarket Intelligence
 
-An end-to-end **data engineering and analytics platform** that transforms multi-source job postings into actionable insights about technology demand, role expectations, and emerging skills in Turkey's data job market.
+An end-to-end **data engineering and career intelligence platform** that transforms multi-source technology job postings into structured market intelligence about roles, technologies, capabilities, seniority, and employer demand.
 
-The project is designed around a simple question:
+The project is built around a simple question:
 
-> **What technologies are companies looking for, and what should a data professional learn next?**
+> **What does the technology job market expect, and what should a technology professional learn next?**
 
 ---
 
@@ -14,47 +14,20 @@ Traditional job boards are designed to help users find individual vacancies.
 
 **JobMarket Intelligence treats the job market as a dataset.**
 
-The platform collects job postings from multiple sources, standardizes semi-structured data, builds an analytical warehouse, and transforms the results into market and career intelligence.
+The platform continuously collects job postings from multiple sources, standardizes semi-structured data, builds an analytical warehouse, classifies technology roles, extracts market signals, and transforms those signals into career intelligence.
 
-It aims to answer questions such as:
+The project aims to answer questions such as:
 
-- Which technologies are most in demand?
-- How do skill requirements differ across data roles?
-- Which technology stacks appear across companies?
-- How is skill demand changing over time?
-- What should a data professional learn next?
+- Which technology career areas are hiring?
+- Which roles are most in demand?
+- Which technologies are requested most frequently?
+- How do technology requirements differ across roles and seniority levels?
+- What capabilities do employers expect beyond individual tools?
+- Which technology stacks commonly appear together?
+- How is technology demand changing over time?
+- What should a technology professional learn next?
 
----
-
-## Architecture
-
-```text
-Job Sources
-    │
-    ▼
-Python Collectors
-    │
-    ▼
-RAW / Staging
-    │
-    ▼
-SQL Server DWH
-    │
-    ▼
-dbt
-    │
-    ▼
-Analytical Marts
-    │
-    ▼
-Apache Airflow
-    │
-    ├──────────────► Streamlit Analytics Dashboard
-    │
-    └──────────────► Next.js Public Web Application
-```
-
-The pipeline separates **data collection, standardization, warehouse modeling, analytics engineering, orchestration, and presentation** into independent layers.
+The long-term product direction is a **Career Radar** that combines market evidence with a user's existing skills to identify career fit, skill gaps, and recommended next learning steps.
 
 ---
 
@@ -62,28 +35,90 @@ The pipeline separates **data collection, standardization, warehouse modeling, a
 
 | Metric | Current Value |
 |---|---:|
-| Unique Job Postings | 346 |
-| Companies | 75 |
-| Skills Tracked | 32 |
+| Unique Job Postings | 531 |
+| Companies | 78 |
+| Classified Tech Jobs | 273 |
+| Observed Technologies | 93 |
 | Data Sources | 3 |
+| Capability Definitions | 26 |
+| Capability Categories | 7 |
 
 > The dataset grows incrementally as scheduled ingestion pipelines collect new observations.
 
 ---
 
+## Architecture
+
+```text
+                    JOB SOURCES
+                         │
+              ┌──────────┼──────────┐
+              │          │          │
+            Jooble      Lever     Akbank
+              │          │          │
+              └──────────┼──────────┘
+                         ▼
+                 Python Collectors
+                         │
+                         ▼
+                   RAW / Staging
+                         │
+                         ▼
+                 SQL Server DWH
+                         │
+          ┌──────────────┼──────────────┐
+          │              │              │
+          ▼              ▼              ▼
+   Job Classification  Skill        Capability
+                       Extraction    Extraction
+          │              │              │
+          └──────────────┼──────────────┘
+                         ▼
+                        dbt
+                         │
+                         ▼
+                 Analytical Marts
+                         │
+                         ▼
+                  Serving Layer
+                         │
+              ┌──────────┴──────────┐
+              ▼                     ▼
+          Streamlit              Next.js
+          Analytics              Public Web
+```
+
+**Apache Airflow** orchestrates the ingestion, transformation, classification, warehouse loading, analytics, and publishing workflows.
+
+The architecture separates:
+
+- data collection
+- source standardization
+- warehouse modeling
+- job classification
+- technology extraction
+- capability extraction
+- analytics engineering
+- orchestration
+- serving and presentation
+
+into independent layers.
+
+---
+
 ## Data Sources
 
-The current pipeline integrates multiple job-posting sources using dedicated source adapters.
+The pipeline currently integrates job postings using dedicated source adapters.
 
 | Source | Integration |
 |---|---|
-| Jooble | API |
-| Trendyol | Lever Postings API |
+| Jooble | Job Search API |
+| Lever-hosted company career sites | Lever Postings API |
 | Akbank Career | Career API |
 
-Each source has its own collector and loader, while all sources eventually conform to a **common staging contract**.
+Lever ingestion is configuration-driven and can collect postings from multiple company career sites without changing downstream processing logic.
 
-This allows new sources to be introduced without redesigning the downstream warehouse.
+Each source ultimately conforms to a **common staging contract**, allowing additional sources to be introduced without redesigning the warehouse.
 
 ---
 
@@ -91,73 +126,244 @@ This allows new sources to be introduced without redesigning the downstream ware
 
 ### 1. Multi-Source Ingestion
 
-Python collectors retrieve job postings from multiple APIs and career platforms.
+Python collectors retrieve job postings from APIs and company career platforms.
 
-Raw responses are preserved before transformation, providing lineage between the original source data and the analytical warehouse.
+Raw responses are preserved before transformation, providing lineage between source data and analytical warehouse records.
 
 ### 2. Standardized Staging
 
-Source-specific structures are normalized into a common job-posting model containing fields such as:
+Source-specific structures are normalized into a common job-posting contract containing fields such as:
 
-- source system and platform
-- job identifier
+- source system
+- source platform
+- source job identifier
 - job title
 - company
 - location
 - description
-- employment and work model
+- employment type
+- work model
 - source timestamps
-- extraction timestamps
+- extraction timestamp
+- discovery keyword
+- raw source file
 
-### 3. Text Processing
+This isolates downstream models from differences between external APIs.
 
-Job descriptions are cleaned and analyzed to extract structured information from unstructured text.
+### 3. Job Classification
 
-The processing layer includes:
+Raw job titles are not reliable analytical dimensions.
 
-- HTML cleaning
-- canonical skill extraction
-- role classification
-- seniority classification
-- configurable skill and role taxonomies
+For example, a title such as:
 
-### 4. Data Warehouse
+```text
+Senior Data Software Engineer / Airflow, Snowflake, AI, dbt
+```
 
-The standardized data is loaded into a dimensional SQL Server warehouse.
+can be transformed into structured dimensions:
 
-A key modeling decision is separating a **job posting** from an **observation of that posting**.
+```text
+IsTechRole   = Tech
+Career Area  = Data & Analytics
+Role         = Data Engineer
+Seniority    = Senior
+```
 
-This prevents repeated collection from being interpreted as new vacancies while still preserving historical observations.
+The classification pipeline derives:
+
+- Tech / Non-Tech status
+- Career Area
+- normalized Role
+- Seniority
+
+Classification rules are configuration-driven and follow a **precision-first approach**.
 
 ---
 
-## Data Model
+## Career Area Taxonomy
 
-### Dimensions
+Technology jobs are currently organized into the following high-level career areas:
+
+1. Data & Analytics
+2. AI & Machine Learning
+3. Software Engineering
+4. Cloud, DevOps & Platform
+5. Cybersecurity
+6. Enterprise Applications
+7. IT Operations & Support
+8. Other Tech
+
+This creates a stable analytical layer above inconsistent source job titles.
+
+---
+
+## Technology Intelligence
+
+Job descriptions are analyzed using a configuration-driven technology taxonomy.
+
+The current taxonomy supports more than 100 technology definitions, with **93 technologies currently observed** in collected market data.
+
+Examples include:
+
+```text
+Python
+SQL
+AWS
+Azure
+GCP
+Databricks
+Spark
+Terraform
+Docker
+Kubernetes
+Airflow
+dbt
+.NET
+Java
+Salesforce
+SAP
+```
+
+Technology extraction enables analysis such as:
+
+- overall technology demand
+- role-specific technology demand
+- company technology stacks
+- technology co-occurrence
+- technology trends over time
+
+---
+
+## Capability Intelligence
+
+Knowing which technologies appear in a job posting does not fully describe what employers expect candidates to **do**.
+
+For example:
+
+```text
+Technology Signals
+------------------
+Airflow
+Terraform
+AWS
+GitHub Actions
+Spark
+```
+
+may correspond to capabilities such as:
+
+```text
+Data Pipeline Engineering
+Data Workflow Automation
+Infrastructure Automation
+Cloud Infrastructure Engineering
+CI/CD & Release Engineering
+```
+
+The project therefore includes an additional **Capability Intelligence** layer.
+
+Capability Taxonomy V1 currently contains:
+
+- **26 capabilities**
+- **7 capability categories**
+
+Current capability areas include:
+
+- Data Pipeline Engineering
+- ETL/ELT Development
+- Data Modeling
+- Data Warehouse Engineering
+- Data Transformation
+- Data Workflow Automation
+- Data Product Development
+- Data Analysis
+- AI/ML Engineering
+- AI Workflow Engineering
+- Application Development
+- Backend Development
+- Frontend Development
+- Mobile Application Development
+- API Development & Integration
+- Software Architecture & System Design
+- Distributed Systems Engineering
+- Cloud Infrastructure Engineering
+- Infrastructure Automation
+- CI/CD & Release Engineering
+- Monitoring & Observability
+- Incident Management
+- Performance & Scalability Engineering
+- Testing & Quality Engineering
+- Security Engineering
+- Troubleshooting & Technical Support
+
+Capability extraction combines textual evidence with job context.
+
+For example:
+
+```text
+"data pipelines"
+        +
+Role = Data Engineer
+        +
+Career Area = Data & Analytics
+        ↓
+Data Pipeline Engineering
+```
+
+This context-aware approach helps reduce false positives caused by company descriptions, generic text, and terminology that has different meanings across roles.
+
+> **Capability Taxonomy V1 is currently under active profiling and validation before being promoted into the production warehouse model.**
+
+---
+
+## Data Warehouse
+
+Standardized data is loaded into a dimensional **SQL Server** warehouse.
+
+### Core Dimensions
 
 - `DimCompany`
 - `DimLocation`
 - `DimRole`
 - `DimSkill`
+- `DimCareerArea`
 
-### Facts
+### Core Facts
 
 - `FactJobPosting`
 - `FactJobObservation`
 
-### Bridge
+### Bridges
 
 - `BridgeJobPostingSkill`
 
-`FactJobPosting` represents a unique source-level vacancy using:
+The capability model is currently being prepared for:
+
+- `DimCapability`
+- `BridgeJobPostingCapability`
+
+---
+
+## Job Identity vs. Observation
+
+One of the key modeling decisions is separating a **job posting** from an **observation of that posting**.
+
+A unique source-level vacancy is identified using:
 
 ```text
 (SourceSystem, SourceJobID)
 ```
 
+`FactJobPosting` represents the canonical vacancy.
+
 `FactJobObservation` records when that vacancy was observed by the ingestion pipeline.
 
-This design supports both current-state analytics and historical market analysis.
+This prevents repeated collection from being interpreted as new vacancies while still preserving historical market observations.
+
+The model therefore supports both:
+
+- current-state market analytics
+- historical market analysis
 
 ---
 
@@ -173,7 +379,7 @@ Measures overall technology demand across job postings.
 
 ### `mart_role_skill_demand`
 
-Measures skill demand within individual job roles.
+Measures technology demand within individual job roles.
 
 ### `mart_company_tech_stack`
 
@@ -187,41 +393,56 @@ Tracks observed technology demand over time.
 
 Monitors ingestion quality and coverage across different sources.
 
-dbt tests are used to validate model integrity and important data-quality assumptions.
+### `mart_career_area_overview`
+
+Provides market-level analytics across technology career areas.
+
+### `mart_role_seniority_demand`
+
+Measures demand across normalized roles and seniority levels.
+
+dbt tests validate model integrity and important data-quality assumptions.
+
+Planned career-intelligence marts include:
+
+```text
+mart_role_capability_demand
+mart_role_professional_skill_demand
+mart_role_profile
+mart_career_recommendation
+```
 
 ---
 
 ## Orchestration
 
-**Apache Airflow** orchestrates the end-to-end pipelines.
+**Apache Airflow** orchestrates the end-to-end data workflows.
 
 ### Daily Pipeline
 
 ```text
-Akbank Collector
-       │
-Akbank RAW Loader
-       │
-       ├──────────────┐
-       │              │
-Lever Collector       │
-       │              │
-Lever RAW Loader      │
-       │              │
-       └──────┬───────┘
-              ▼
-      Staging Transform
-              │
-              ▼
-          DWH Load
-              │
-              ▼
-          dbt Build
+Akbank Collector ──► Akbank RAW Loader ──┐
+                                         │
+Lever Collector ───► Lever RAW Loader ───┤
+                                         ▼
+                                Staging Transform
+                                         │
+                                         ▼
+                                     DWH Load
+                                         │
+                                         ▼
+                                Job Classification
+                                         │
+                                         ▼
+                                     dbt Build
+                                         │
+                                         ▼
+                                  Web Publishing
 ```
 
 ### Jooble Pipeline
 
-Jooble ingestion runs separately with a **quota-aware collection strategy** to reduce unnecessary API consumption.
+Jooble ingestion runs separately using a **quota-aware collection strategy**.
 
 ```text
 Jooble Collector
@@ -236,10 +457,15 @@ Staging Transform
 DWH Load
        │
        ▼
+Job Classification
+       │
+       ▼
 dbt Build
 ```
 
-The local development environment uses Airflow with `SequentialExecutor`, intentionally keeping the infrastructure lightweight.
+The local development environment uses Airflow with `SequentialExecutor`, keeping infrastructure appropriate for the current workload.
+
+Airflow metadata is stored in PostgreSQL separately from the analytical SQL Server warehouse.
 
 ---
 
@@ -247,22 +473,73 @@ The local development environment uses Airflow with `SequentialExecutor`, intent
 
 ### Streamlit Analytics Dashboard
 
-A Streamlit application provides an internal analytics interface for exploring:
+The Streamlit application provides an internal analytical interface for exploring:
 
 - market KPIs
-- skill demand
+- technology demand
 - role distribution
-- skill trends
+- technology trends
 - company technology stacks
 - source quality
 
-### Next.js Web Application
+### Next.js Public Web Application
 
-A separate **Next.js + TypeScript** application is being developed as the public-facing data product.
+A separate **Next.js + TypeScript** application provides the foundation for the public-facing data product.
 
-The goal is to provide an accessible interface for exploring market demand and eventually generating role-specific skill recommendations.
+The public web layer is intentionally isolated from the analytical SQL Server warehouse.
 
-The public application is intentionally separated from the analytical warehouse rather than exposing SQL Server directly.
+Curated analytical outputs are published into a dedicated serving format rather than exposing SQL Server directly.
+
+---
+
+## Career Radar
+
+The long-term product layer is designed around a simple user flow:
+
+```text
+Select Career Area
+        │
+        ▼
+Select Target Role
+        │
+        ▼
+Select Seniority
+        │
+        ▼
+Select Technologies You Already Know
+        │
+        ▼
+    Career Radar
+```
+
+The system will combine market evidence with the user's current profile to estimate:
+
+```text
+Market Fit
+Strong Areas
+Technology Gaps
+Capability Gaps
+Emerging Skills
+Recommended Next Technologies
+Recommended Learning Path
+```
+
+Recommendations are intended to be **evidence-based rather than hardcoded**.
+
+A future recommendation can be supported by signals such as:
+
+- demand within the target role
+- seniority relevance
+- number of companies requesting the technology
+- number of independent sources
+- technology co-occurrence
+- capability relevance
+- demand momentum
+- prerequisite relationships
+
+The product direction can be summarized as:
+
+> **Don't just search for your next job. Understand your next move.**
 
 ---
 
@@ -271,11 +548,12 @@ The public application is intentionally separated from the analytical warehouse 
 | Layer | Technologies |
 |---|---|
 | Ingestion | Python, Requests |
-| Processing | Python, BeautifulSoup, Regex |
+| Text Processing | Python, BeautifulSoup, Regex |
 | Database | SQL Server |
 | Data Modeling | Dimensional Modeling |
 | Analytics Engineering | dbt |
 | Orchestration | Apache Airflow |
+| Airflow Metadata | PostgreSQL |
 | Infrastructure | Docker, Docker Compose |
 | Internal Analytics | Streamlit, Plotly |
 | Public Web | Next.js, TypeScript, Tailwind CSS |
@@ -291,7 +569,7 @@ JobMarket-Intelligence/
 ├── airflow/
 │   └── dags/                 # Airflow orchestration
 │
-├── config/                   # Skill and role taxonomies
+├── config/                   # Role, skill and capability taxonomies
 │
 ├── dashboard/                # Streamlit analytics dashboard
 │
@@ -309,7 +587,8 @@ JobMarket-Intelligence/
 ├── ingestion/
 │   ├── collectors/           # Source-specific collectors
 │   ├── loaders/              # RAW, STG and DWH loaders
-│   └── parsers/              # Text and taxonomy processing
+│   ├── parsers/              # Classification and text processing
+│   └── publishers/           # Serving-layer publishers
 │
 ├── sql/
 │   ├── staging/
@@ -328,61 +607,105 @@ JobMarket-Intelligence/
 
 ## Engineering Decisions
 
-### Job Identity vs. Observation
-
-A job posting and an observation of that job are modeled separately.
-
-This allows the same vacancy to be collected repeatedly without inflating the number of unique jobs.
-
 ### Source-Specific Adapters
 
-Each external source has its own ingestion adapter, but downstream processing operates on a standardized contract.
+Each external source has its own ingestion adapter while downstream processing operates on a standardized contract.
 
-This reduces coupling between source APIs and the analytical model.
+This reduces coupling between external APIs and the analytical model.
 
 ### Configuration-Driven Taxonomies
 
-Skill and role definitions are maintained outside the processing logic, making classification rules easier to extend.
+Role, seniority, technology, and capability definitions are maintained outside the core processing logic.
+
+This makes classification behavior easier to profile, validate, and extend.
+
+### Precision Before Coverage
+
+Classification and capability extraction prioritize reliable evidence over artificially maximizing coverage.
+
+Ambiguous evidence is profiled and validated before being promoted into production rules.
+
+### Historical Observation Model
+
+Job identity and job observation are modeled separately, allowing repeated collection without inflating unique vacancy counts.
 
 ### Appropriate Technology Over Artificial Complexity
 
-The current dataset does not require distributed processing technologies such as Spark or Kafka.
+The current workload does not require distributed processing technologies such as Spark or Kafka.
 
-Rather than introducing them solely to increase the number of technologies in the stack, the project uses infrastructure appropriate for its current scale.
+Rather than introducing technologies solely to increase stack complexity, infrastructure is selected according to the actual scale and requirements of the project.
 
 ### Public Serving Isolation
 
-The analytical SQL Server warehouse is not intended to be exposed directly to the public application.
+The SQL Server analytical warehouse is not intended to be exposed directly to the public application.
 
-Curated analytical outputs will instead be published to a dedicated serving layer for the public website.
+Curated outputs are published into a separate serving layer for the website.
 
 ---
 
 ## Roadmap
 
+### Data Platform
+
 - [x] Multi-source job ingestion
 - [x] Standardized staging layer
-- [x] Text cleaning and skill extraction
-- [x] Role classification
-- [x] Dimensional SQL Server warehouse
+- [x] SQL Server dimensional warehouse
 - [x] Incremental DWH loading
+- [x] Job observation history
+- [x] Apache Airflow orchestration
 - [x] dbt analytical models
-- [x] Data quality tests
-- [x] Airflow orchestration
+- [x] Data-quality tests
+
+### Career Intelligence
+
+- [x] Tech / Non-Tech classification
+- [x] Career Area taxonomy
+- [x] Role normalization
+- [x] Seniority classification
+- [x] Technology Taxonomy V2
+- [x] Technology demand marts
+- [x] Role and seniority demand mart
+- [ ] Capability Taxonomy V1 production model
+- [ ] Professional Skills taxonomy
+- [ ] Role capability demand mart
+- [ ] Career recommendation marts
+- [ ] Learning evidence model
+
+### Product
+
 - [x] Streamlit analytics dashboard
-- [x] Next.js web application foundation
-- [ ] Public analytics serving layer
-- [ ] Dynamic web analytics
-- [ ] Role and skill explorer
-- [ ] Skill-gap recommendations
+- [x] Next.js public web foundation
+- [x] DWH-to-web publishing pipeline
+- [ ] Dynamic Career Area explorer
+- [ ] Role and technology explorer
+- [ ] Career Radar
+- [ ] Skill-gap recommendation engine
+- [ ] Learning-path recommendations
 - [ ] Public cloud deployment
 
 ---
 
 ## Project Goal
 
-The goal of this project is not simply to collect job postings.
+The goal of **JobMarket Intelligence** is not simply to collect job postings.
 
-It demonstrates how a modern data engineering workflow can transform fragmented and semi-structured job-market data into a reusable analytical product for understanding:
+It demonstrates how a modern data engineering workflow can transform fragmented and semi-structured labor-market data into a reusable **career intelligence product**.
 
-**technology demand, role expectations, market trends, and career skill gaps.**
+The platform is evolving toward four layers of market understanding:
+
+```text
+What role is this?
+        │
+        ▼
+What technologies does it require?
+        │
+        ▼
+What must someone actually be capable of doing?
+        │
+        ▼
+What should they learn next?
+```
+
+Ultimately, the project aims to turn job-market data into transparent, evidence-based intelligence about:
+
+**career areas, role demand, technology demand, capabilities, market trends, skill gaps, and career development.**

@@ -68,3 +68,11 @@ Thumbs.db
 
 # Local dbt profile
 dbt/profiles.yml
+
+# Profiling / QA outputs
+v4_profile.txt
+v41_profile.txt
+v42_profile.txt
+
+# Generated web data
+web/public/data/

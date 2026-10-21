@@ -1,5 +1,9 @@
 services:
 
+  # ==========================================================
+  # JOBMARKET DATA WAREHOUSE
+  # ==========================================================
+
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: jobmarket-sqlserver
@@ -18,17 +22,93 @@ services:
     restart: unless-stopped
 
 
-  airflow:
+  # ==========================================================
+  # AIRFLOW METADATA DATABASE
+  # ==========================================================
+
+  airflow-postgres:
+    image: postgres:16
+    container_name: jobmarket-airflow-postgres
+
+    environment:
+      POSTGRES_DB: airflow
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+
+    volumes:
+      - jobmarket_airflow_postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    restart: unless-stopped
+
+
+  # ==========================================================
+  # AIRFLOW INIT
+  # ==========================================================
+
+  airflow-init:
     build:
       context: .
       dockerfile: Dockerfile.airflow
 
-    container_name: jobmarket-airflow
+    container_name: jobmarket-airflow-init
 
     depends_on:
-      - sqlserver
+      airflow-postgres:
+        condition: service_healthy
 
     environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+
+    volumes:
+      - ./:/opt/airflow/jobmarket
+      - ./airflow/dags:/opt/airflow/dags
+      - ${USERPROFILE}/.dbt:/opt/airflow/.dbt
+
+    working_dir: /opt/airflow/jobmarket
+
+    command:
+      - bash
+      - -c
+      - |
+        airflow db migrate &&
+        airflow users create \
+          --username admin \
+          --password admin \
+          --firstname Gokhan \
+          --lastname Guler \
+          --role Admin \
+          --email admin@example.com || true
+
+
+  # ==========================================================
+  # AIRFLOW WEBSERVER
+  # ==========================================================
+
+  airflow-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+
+    container_name: jobmarket-airflow-webserver
+
+    depends_on:
+      airflow-postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+      sqlserver:
+        condition: service_started
+
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
       AIRFLOW__CORE__EXECUTOR: SequentialExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
 
@@ -51,10 +131,60 @@ services:
 
     working_dir: /opt/airflow/jobmarket
 
-    command: airflow standalone
+    command: airflow webserver
 
     restart: unless-stopped
 
 
+  # ==========================================================
+  # AIRFLOW SCHEDULER
+  # ==========================================================
+
+  airflow-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+
+    container_name: jobmarket-airflow-scheduler
+
+    depends_on:
+      airflow-postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+      sqlserver:
+        condition: service_started
+
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+
+      MSSQL_HOST: sqlserver
+      MSSQL_PORT: "1433"
+      MSSQL_DATABASE: JobMarketDWH
+      MSSQL_USER: sa
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_DRIVER: ODBC Driver 17 for SQL Server
+
+      JOOBLE_API_KEY: ${JOOBLE_API_KEY}
+
+    volumes:
+      - ./:/opt/airflow/jobmarket
+      - ./airflow/dags:/opt/airflow/dags
+      - ${USERPROFILE}/.dbt:/opt/airflow/.dbt
+
+    working_dir: /opt/airflow/jobmarket
+
+    command: airflow scheduler
+
+    restart: unless-stopped
+
+
+# ============================================================
+# PERSISTENT VOLUMES
+# ============================================================
+
 volumes:
   jobmarket_sqlserver_data:
+  jobmarket_airflow_postgres_data:

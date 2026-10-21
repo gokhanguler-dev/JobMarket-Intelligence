@@ -30,6 +30,8 @@ sources:
 
       - name: DimRole
 
+      - name: DimCareerArea
+
       - name: DimSkill
 
       - name: FactJobPosting

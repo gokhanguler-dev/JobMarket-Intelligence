@@ -123,5 +123,293 @@
   ],
   "Semantic Kernel": [
     "semantic kernel"
+  ],
+
+  ".NET": [
+    ".net",
+    "dotnet"
+  ],
+  "C#": [
+    "c#",
+    "c sharp"
+  ],
+  "C++": [
+    "c++",
+    "cpp"
+  ],
+  "JavaScript": [
+    "javascript",
+    "java script"
+  ],
+  "TypeScript": [
+    "typescript",
+    "type script"
+  ],
+  "Go": [
+    "golang",
+    "go language"
+  ],
+  "PHP": [
+    "php"
+  ],
+  "Ruby": [
+    "ruby"
+  ],
+  "Kotlin": [
+    "kotlin"
+  ],
+  "Swift": [
+    "swift"
+  ],
+  "Dart": [
+    "dart"
+  ],
+  "ABAP": [
+    "abap"
+  ],
+
+  "Node.js": [
+    "node.js",
+    "nodejs",
+    "node js"
+  ],
+  "Spring": [
+    "spring",
+    "spring boot"
+  ],
+  "Django": [
+    "django"
+  ],
+  "Flask": [
+    "flask"
+  ],
+  "FastAPI": [
+    "fastapi",
+    "fast api"
+  ],
+  "ASP.NET": [
+    "asp.net",
+    "asp net"
+  ],
+
+  "React": [
+    "react",
+    "react.js",
+    "reactjs"
+  ],
+  "Angular": [
+    "angular",
+    "angular.js",
+    "angularjs"
+  ],
+  "Vue.js": [
+    "vue",
+    "vue.js",
+    "vuejs"
+  ],
+  "Next.js": [
+    "next.js",
+    "nextjs",
+    "next js"
+  ],
+
+  "Flutter": [
+    "flutter"
+  ],
+  "React Native": [
+    "react native"
+  ],
+  "Android": [
+    "android"
+  ],
+  "iOS": [
+    "ios"
+  ],
+
+  "MySQL": [
+    "mysql"
+  ],
+  "MongoDB": [
+    "mongodb",
+    "mongo db"
+  ],
+  "Redis": [
+    "redis"
+  ],
+  "Elasticsearch": [
+    "elasticsearch",
+    "elastic search"
+  ],
+  "OpenSearch": [
+    "opensearch",
+    "open search"
+  ],
+  "Cassandra": [
+    "cassandra"
+  ],
+  "DynamoDB": [
+    "dynamodb",
+    "dynamo db"
+  ],
+  "SQLite": [
+    "sqlite"
+  ],
+
+  "Jenkins": [
+    "jenkins"
+  ],
+  "GitHub Actions": [
+    "github actions"
+  ],
+  "GitLab CI": [
+    "gitlab ci",
+    "gitlab ci/cd"
+  ],
+  "Argo CD": [
+    "argo cd",
+    "argocd"
+  ],
+  "Ansible": [
+    "ansible"
+  ],
+  "Helm": [
+    "helm"
+  ],
+  "Prometheus": [
+    "prometheus"
+  ],
+  "Grafana": [
+    "grafana"
+  ],
+  "OpenTelemetry": [
+    "opentelemetry",
+    "open telemetry"
+  ],
+  "Datadog": [
+    "datadog"
+  ],
+
+  "RabbitMQ": [
+    "rabbitmq",
+    "rabbit mq"
+  ],
+  "ActiveMQ": [
+    "activemq",
+    "active mq"
+  ],
+  "Flink": [
+    "apache flink",
+    "flink"
+  ],
+
+  "Tableau": [
+    "tableau"
+  ],
+  "Looker": [
+    "looker"
+  ],
+  "Qlik": [
+    "qlik",
+    "qlik sense",
+    "qlikview"
+  ],
+  "Trino": [
+    "trino"
+  ],
+  "Presto": [
+    "presto"
+  ],
+  "Hive": [
+    "apache hive",
+    "hive"
+  ],
+  "Hadoop": [
+    "apache hadoop",
+    "hadoop"
+  ],
+  "Delta Lake": [
+    "delta lake"
+  ],
+  "Iceberg": [
+    "apache iceberg",
+    "iceberg"
+  ],
+  "Fivetran": [
+    "fivetran"
+  ],
+  "Informatica": [
+    "informatica"
+  ],
+
+  "PyTorch": [
+    "pytorch"
+  ],
+  "TensorFlow": [
+    "tensorflow",
+    "tensor flow"
+  ],
+  "scikit-learn": [
+    "scikit-learn",
+    "scikit learn",
+    "sklearn"
+  ],
+  "Hugging Face": [
+    "hugging face",
+    "huggingface"
+  ],
+  "MLflow": [
+    "mlflow"
+  ],
+  "OpenAI": [
+    "openai"
+  ],
+  "LlamaIndex": [
+    "llamaindex",
+    "llama index"
+  ],
+
+  "SAP": [
+    "sap"
+  ],
+  "SAP HANA": [
+    "sap hana",
+    "hana"
+  ],
+  "SAP S/4HANA": [
+    "s/4hana",
+    "s4hana",
+    "sap s/4hana",
+    "sap s4hana"
+  ],
+  "Salesforce": [
+    "salesforce"
+  ],
+  "ServiceNow": [
+    "servicenow",
+    "service now"
+  ],
+  "Microsoft Dynamics": [
+    "microsoft dynamics",
+    "dynamics 365",
+    "dynamics crm"
+  ],
+
+  "GraphQL": [
+    "graphql",
+    "graph ql"
+  ],
+  "gRPC": [
+    "grpc"
+  ],
+
+  "Cloudflare": [
+    "cloudflare"
+  ],
+  "Splunk": [
+    "splunk"
+  ],
+  "SonarQube": [
+    "sonarqube",
+    "sonar qube"
   ]
 }

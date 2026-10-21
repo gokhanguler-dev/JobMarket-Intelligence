@@ -1,0 +1,531 @@
+{
+  "version": "1.0",
+  "description": "Capability taxonomy derived from technical job responsibilities. Strong patterns represent explicit capability evidence. Medium patterns represent weaker contextual evidence and should not be used alone without validation.",
+
+  "capabilities": [
+    {
+      "name": "Data Pipeline Engineering",
+      "category": "Data Engineering",
+      "strong_patterns": [
+        "build data pipelines",
+        "develop data pipelines",
+        "design data pipelines",
+        "maintain data pipelines",
+        "build and maintain data pipelines",
+        "design and build data pipelines",
+        "develop and maintain data pipelines",
+        "scalable data pipelines",
+        "data pipeline development"
+      ],
+      "medium_patterns": [
+        "data pipeline",
+        "data pipelines"
+      ]
+    },
+    {
+      "name": "ETL/ELT Development",
+      "category": "Data Engineering",
+      "strong_patterns": [
+        "build etl pipelines",
+        "develop etl pipelines",
+        "design etl pipelines",
+        "maintain etl pipelines",
+        "build elt pipelines",
+        "develop elt pipelines",
+        "design elt pipelines",
+        "etl development",
+        "elt development",
+        "etl processes",
+        "elt processes"
+      ],
+      "medium_patterns": [
+        "etl pipeline",
+        "etl pipelines",
+        "elt pipeline",
+        "elt pipelines",
+        "etl/elt",
+        "etl",
+        "elt"
+      ]
+    },
+    {
+      "name": "Data Modeling",
+      "category": "Data Engineering",
+      "strong_patterns": [
+        "design data models",
+        "develop data models",
+        "build data models",
+        "create data models",
+        "data modeling",
+        "data modelling",
+        "dimensional modeling",
+        "dimensional modelling"
+      ],
+      "medium_patterns": [
+        "data model",
+        "data models",
+        "dimensional model"
+      ]
+    },
+    {
+      "name": "Data Warehouse Engineering",
+      "category": "Data Engineering",
+      "strong_patterns": [
+        "design data warehouse",
+        "design and maintain the data warehouse",
+        "build data warehouse",
+        "develop data warehouse",
+        "maintain data warehouse",
+        "data warehouse development",
+        "build data marts",
+        "develop data marts",
+        "maintain data marts"
+      ],
+      "medium_patterns": [
+        "data warehouse",
+        "data warehouses",
+        "data mart",
+        "data marts",
+        "dwh"
+      ]
+    },
+    {
+      "name": "Data Transformation",
+      "category": "Data Engineering",
+      "strong_patterns": [
+        "transform data",
+        "transform complex data",
+        "data transformation",
+        "data transformations",
+        "transform raw data",
+        "transform source data",
+        "transforming data"
+      ],
+      "medium_patterns": [
+        "transformation logic",
+        "transformation pipelines"
+      ]
+    },
+    {
+      "name": "Data Workflow Automation",
+      "category": "Data Engineering",
+      "strong_patterns": [
+        "automate data workflows",
+        "automate data workflow",
+        "automated data workflows",
+        "orchestrate data workflows",
+        "orchestrate data pipelines",
+        "workflow automation",
+        "data workflow automation"
+      ],
+      "medium_patterns": [
+        "data workflow",
+        "data workflows",
+        "workflow orchestration"
+      ]
+    },
+    {
+      "name": "Data Product Development",
+      "category": "Data Engineering",
+      "strong_patterns": [
+        "build data products",
+        "develop data products",
+        "design data products",
+        "data product development",
+        "build scalable data-centric products",
+        "develop data-driven products"
+      ],
+      "medium_patterns": [
+        "data product",
+        "data products",
+        "data-centric products",
+        "data-driven products"
+      ]
+    },
+
+    {
+      "name": "Data Analysis",
+      "category": "Analytics",
+      "strong_patterns": [
+        "analyze data",
+        "analyse data",
+        "analyze large-scale data",
+        "analyse large-scale data",
+        "data analysis",
+        "analyze datasets",
+        "analyse datasets",
+        "derive insights from data",
+        "transform complex financial and operational data into reliable insights"
+      ],
+      "medium_patterns": [
+        "data insights",
+        "analytical insights"
+      ]
+    },
+
+    {
+      "name": "AI/ML Engineering",
+      "category": "AI & Machine Learning",
+      "strong_patterns": [
+        "build machine learning models",
+        "develop machine learning models",
+        "deploy machine learning models",
+        "train machine learning models",
+        "build ml models",
+        "develop ml models",
+        "deploy ml models",
+        "machine learning engineering",
+        "develop ai solutions",
+        "build ai solutions",
+        "develop an ai-powered",
+        "build ai-powered"
+      ],
+      "medium_patterns": [
+        "machine learning models",
+        "ml models",
+        "ai solutions",
+        "ai-powered"
+      ]
+    },
+    {
+      "name": "AI Workflow Engineering",
+      "category": "AI & Machine Learning",
+      "strong_patterns": [
+        "architect and build intelligent ai workflows",
+        "build intelligent ai workflows",
+        "develop ai workflows",
+        "design ai workflows",
+        "ai workflow automation",
+        "ai workflows",
+        "genai workflows",
+        "generative ai workflows"
+      ],
+      "medium_patterns": [
+        "ai workflow",
+        "genai workflow"
+      ]
+    },
+
+    {
+      "name": "Application Development",
+      "category": "Software Engineering",
+      "strong_patterns": [
+        "develop applications",
+        "build applications",
+        "design applications",
+        "develop and maintain applications",
+        "build and maintain applications",
+        "application development",
+        "develop scalable applications",
+        "build scalable applications"
+      ],
+      "medium_patterns": [
+        "application architecture",
+        "software applications"
+      ]
+    },
+    {
+      "name": "Backend Development",
+      "category": "Software Engineering",
+      "strong_patterns": [
+        "backend development",
+        "back-end development",
+        "develop backend",
+        "build backend",
+        "develop backend services",
+        "build backend services",
+        "develop server-side",
+        "build server-side"
+      ],
+      "medium_patterns": [
+        "backend services",
+        "backend systems",
+        "server-side"
+      ]
+    },
+    {
+      "name": "Frontend Development",
+      "category": "Software Engineering",
+      "strong_patterns": [
+        "frontend development",
+        "front-end development",
+        "develop frontend",
+        "build frontend",
+        "develop user interfaces",
+        "build user interfaces",
+        "develop web interfaces",
+        "build web interfaces"
+      ],
+      "medium_patterns": [
+        "frontend applications",
+        "front-end applications",
+        "user interface development"
+      ]
+    },
+    {
+      "name": "Mobile Application Development",
+      "category": "Software Engineering",
+      "strong_patterns": [
+        "mobile application development",
+        "mobile app development",
+        "develop mobile applications",
+        "build mobile applications",
+        "develop mobile apps",
+        "build mobile apps",
+        "build ai-powered mobile apps",
+        "build and scale world-class mobile experiences"
+      ],
+      "medium_patterns": [
+        "mobile applications",
+        "mobile apps",
+        "mobile development",
+        "android applications",
+        "ios applications"
+      ]
+    },
+    {
+      "name": "API Development & Integration",
+      "category": "Software Engineering",
+      "strong_patterns": [
+        "develop apis",
+        "build apis",
+        "design apis",
+        "implement apis",
+        "api development",
+        "api integration",
+        "integrate apis",
+        "develop restful apis",
+        "build restful apis",
+        "design restful apis"
+      ],
+      "medium_patterns": [
+        "rest api",
+        "restful api",
+        "platform apis",
+        "api integrations"
+      ]
+    },
+    {
+      "name": "Software Architecture & System Design",
+      "category": "Software Engineering",
+      "strong_patterns": [
+        "design system architecture",
+        "designing the system architecture",
+        "system architecture",
+        "software architecture",
+        "design scalable systems",
+        "architect scalable systems",
+        "technical design decisions",
+        "system design",
+        "design and implement scalable systems"
+      ],
+      "medium_patterns": [
+        "solution architecture",
+        "technical architecture",
+        "application architecture"
+      ]
+    },
+    {
+      "name": "Distributed Systems Engineering",
+      "category": "Software Engineering",
+      "strong_patterns": [
+        "distributed systems",
+        "distributed applications",
+        "highly distributed applications",
+        "build distributed systems",
+        "design distributed systems",
+        "develop distributed systems",
+        "distributed systems engineering"
+      ],
+      "medium_patterns": [
+        "distributed architecture",
+        "distributed platform"
+      ]
+    },
+
+    {
+      "name": "Cloud Infrastructure Engineering",
+      "category": "Cloud & Platform",
+      "strong_patterns": [
+        "cloud infrastructure",
+        "build cloud infrastructure",
+        "design cloud infrastructure",
+        "manage cloud infrastructure",
+        "maintain cloud infrastructure",
+        "cloud infrastructure engineering",
+        "on-premise data centers and cloud service providers",
+        "hybrid cloud infrastructure",
+        "cloud environments"
+      ],
+      "medium_patterns": [
+        "cloud platform",
+        "cloud platforms",
+        "cloud environment",
+        "cloud environments"
+      ]
+    },
+    {
+      "name": "Infrastructure Automation",
+      "category": "Cloud & Platform",
+      "strong_patterns": [
+        "infrastructure automation",
+        "automate infrastructure",
+        "automated infrastructure",
+        "infrastructure as code",
+        "automate provisioning",
+        "automated provisioning",
+        "building automation systems",
+        "build automation systems"
+      ],
+      "medium_patterns": [
+        "automation systems",
+        "infrastructure provisioning"
+      ]
+    },
+    {
+      "name": "CI/CD & Release Engineering",
+      "category": "Cloud & Platform",
+      "strong_patterns": [
+        "ci/cd",
+        "continuous integration",
+        "continuous delivery",
+        "continuous deployment",
+        "build test and release infrastructure",
+        "automated build test and release",
+        "release engineering",
+        "release pipelines",
+        "deployment pipelines",
+        "release processes"
+      ],
+      "medium_patterns": [
+        "build pipeline",
+        "build pipelines",
+        "deployment pipeline",
+        "release process"
+      ]
+    },
+    {
+      "name": "Monitoring & Observability",
+      "category": "Cloud & Platform",
+      "strong_patterns": [
+        "monitoring and observability",
+        "monitoring & observability",
+        "design and maintain robust monitoring rules",
+        "monitoring rules",
+        "implement monitoring",
+        "platform monitoring",
+        "system monitoring",
+        "application monitoring",
+        "mobile observability",
+        "observability"
+      ],
+      "medium_patterns": [
+        "monitoring systems",
+        "monitoring tools",
+        "monitoring solution"
+      ]
+    },
+    {
+      "name": "Incident Management",
+      "category": "Cloud & Platform",
+      "strong_patterns": [
+        "incident management",
+        "incident automation",
+        "incident response",
+        "manage incidents",
+        "resolve incidents",
+        "operational incidents"
+      ],
+      "medium_patterns": [
+        "incident handling",
+        "production incidents"
+      ]
+    },
+    {
+      "name": "Performance & Scalability Engineering",
+      "category": "Cloud & Platform",
+      "strong_patterns": [
+        "performance optimization",
+        "optimize performance",
+        "improve performance",
+        "performance tuning",
+        "design scalable systems",
+        "build scalable systems",
+        "scale infrastructure",
+        "scale out the infrastructure",
+        "high-volume performing",
+        "high performance systems",
+        "scalability"
+      ],
+      "medium_patterns": [
+        "scalable systems",
+        "system performance",
+        "application performance"
+      ]
+    },
+
+    {
+      "name": "Testing & Quality Engineering",
+      "category": "Quality & Security",
+      "strong_patterns": [
+        "testing and quality",
+        "quality engineering",
+        "software testing",
+        "automated testing",
+        "test automation",
+        "design tests",
+        "develop tests",
+        "implement tests",
+        "testing practices",
+        "testing game features"
+      ],
+      "medium_patterns": [
+        "unit testing",
+        "integration testing",
+        "quality assurance",
+        "testing frameworks"
+      ]
+    },
+    {
+      "name": "Security Engineering",
+      "category": "Quality & Security",
+      "strong_patterns": [
+        "security engineering",
+        "secure systems",
+        "secure applications",
+        "secure infrastructure",
+        "application security",
+        "cloud security",
+        "security architecture",
+        "security controls",
+        "security testing",
+        "secure and scalable environments"
+      ],
+      "medium_patterns": [
+        "security practices",
+        "security requirements",
+        "security standards"
+      ]
+    },
+
+    {
+      "name": "Troubleshooting & Technical Support",
+      "category": "Operations & Support",
+      "strong_patterns": [
+        "troubleshoot technical issues",
+        "troubleshooting technical issues",
+        "technical troubleshooting",
+        "provide technical support",
+        "technical support",
+        "resolve technical issues",
+        "debug production issues",
+        "troubleshoot production issues"
+      ],
+      "medium_patterns": [
+        "customer technical issues",
+        "production support",
+        "application support"
+      ]
+    }
+  ]
+}

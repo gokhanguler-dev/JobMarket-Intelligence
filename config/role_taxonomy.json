@@ -1,100 +1,443 @@
 {
-  "Data Engineer": [
-    "data engineer",
-    "data software engineer",
-    "data integration engineer",
-    "databricks engineer",
-    "data infrastructure engineer",
-    "data & ai chapter lead engineer",
-    "veri mühendisi",
-    "veri mühendisliği"
-  ],
+  "Data Engineer": {
+    "career_area": "Data & Analytics",
+    "aliases": [
+      "data engineer",
+      "data software engineer",
+      "data integration engineer",
+      "databricks engineer",
+      "data infrastructure engineer",
+      "data & ai chapter lead engineer",
+      "veri mühendisi",
+      "veri mühendisliği"
+    ]
+  },
 
-  "Analytics Engineer": [
-    "analytics engineer",
-    "analitik mühendisi",
-    "analitik mühendisi"
-  ],
+  "Analytics Engineer": {
+    "career_area": "Data & Analytics",
+    "aliases": [
+      "analytics engineer",
+      "analitik mühendisi"
+    ]
+  },
 
-  "Data Analyst": [
-    "data analyst",
-    "data integration and governance analyst",
-    "data & monetization analyst",
-    "veri analisti",
-    "veri analiz uzmanı"
-  ],
+  "Data Analyst": {
+    "career_area": "Data & Analytics",
+    "aliases": [
+      "data analyst",
+      "data integration and governance analyst",
+      "data & monetization analyst",
+      "veri analisti",
+      "veri analiz uzmanı"
+    ]
+  },
 
-  "BI Analyst": [
-    "bi analyst",
-    "iş zekası analisti",
-    "iş zekası uzmanı"
-  ],
+  "BI Analyst": {
+    "career_area": "Data & Analytics",
+    "aliases": [
+      "bi analyst",
+      "business intelligence analyst",
+      "iş zekası analisti",
+      "iş zekası uzmanı"
+    ]
+  },
 
-  "BI Developer": [
-    "bi developer",
-    "business intelligence developer",
-    "power bi developer",
-    "iş zekası geliştirici",
-    "iş zekası geliştiricisi"
-  ],
+  "BI Developer": {
+    "career_area": "Data & Analytics",
+    "aliases": [
+      "bi developer",
+      "business intelligence developer",
+      "power bi developer",
+      "power bi",
+      "iş zekası geliştirici",
+      "iş zekası geliştiricisi"
+    ]
+  },
 
-  "Data Scientist": [
-    "data scientist",
-    "data science team manager",
-    "veri bilimcisi",
-    "veri bilimci",
-    "veri bilimi uzmanı"
-  ],
+  "Data Architect": {
+    "career_area": "Data & Analytics",
+    "aliases": [
+      "data architect",
+      "data solution architect",
+      "veri mimarı"
+    ]
+  },
 
-  "Machine Learning Engineer": [
-    "machine learning engineer",
-    "ml engineer",
-    "deep learning engineer",
-    "makine öğrenmesi mühendisi",
-    "makine öğrenimi mühendisi"
-  ],
+  "Data Consultant": {
+    "career_area": "Data & Analytics",
+    "aliases": [
+      "data technology consultant",
+      "data migration and transformation consultant"
+    ]
+  },
 
-  "AI Engineer": [
-    "ai engineer",
-    "ai solution engineer",
-    "yapay zeka mühendisi",
-    "yapay zeka çözüm mühendisi",
-    "yapay zeka çözüm danışmanı"
-  ],
+  "Analytics Manager": {
+    "career_area": "Data & Analytics",
+    "aliases": [
+      "analytics manager"
+    ]
+  },
 
-  "Data Architect": [
-    "data architect",
-    "data solution architect",
-    "data & ai architect",
-    "ai architect",
-    "veri mimarı",
-    "veri mimarisi",
-    "yapay zeka mimarı"
-  ],
+  "Data Lead": {
+    "career_area": "Data & Analytics",
+    "aliases": [
+      "data lead"
+    ]
+  },
 
-  "Data DevOps Engineer": [
-    "data devops engineer",
-    "data devops lead"
-  ],
+  "SQL Developer": {
+    "career_area": "Data & Analytics",
+    "aliases": [
+      "sql server developer"
+    ]
+  },
 
-  "Business Analyst": [
-    "business analyst",
-    "iş analisti"
-  ],
+  "Data Scientist": {
+    "career_area": "AI & Machine Learning",
+    "aliases": [
+      "data scientist",
+      "veri bilimcisi",
+      "veri bilimci",
+      "veri bilimi uzmanı"
+    ]
+  },
 
-  "Financial Analyst": [
-    "financial analyst",
-    "finansal analist"
-  ],
+  "Data Science Manager": {
+    "career_area": "AI & Machine Learning",
+    "aliases": [
+      "data science team manager",
+      "data science manager"
+    ]
+  },
 
-  "Software Engineer": [
-    "software engineer",
-    "full-stack engineer",
-    "full stack engineer",
-    "backend engineer",
-    "backend developer",
-    "yazılım mühendisi",
-    "yazılım geliştirici",
-    "yazılım geliştiricisi"
-  ]
+  "Machine Learning Engineer": {
+    "career_area": "AI & Machine Learning",
+    "aliases": [
+      "machine learning engineer",
+      "ml engineer",
+      "deep learning engineer",
+      "makine öğrenmesi mühendisi",
+      "makine öğrenimi mühendisi"
+    ]
+  },
+
+  "AI Engineer": {
+    "career_area": "AI & Machine Learning",
+    "aliases": [
+      "ai engineer",
+      "ai solution engineer",
+      "generative ai engineer",
+      "genai engineer",
+      "ai/ml engineer",
+      "ai python engineer",
+      "genai ops engineer",
+      "generative ai operations",
+      "yapay zeka mühendisi",
+      "yapay zeka çözüm mühendisi"
+    ]
+  },
+
+  "AI Architect": {
+    "career_area": "AI & Machine Learning",
+    "aliases": [
+      "ai architect",
+      "data & ai architect",
+      "yapay zeka mimarı",
+      "yapay zeka çözüm mimarı",
+      "yapay zeka çözüm danışmanı"
+    ]
+  },
+
+  "Software Engineer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "software engineer",
+      "software developer",
+      ".net developer",
+      ".net engineer",
+      "java developer",
+      "node.js engineer",
+      "python developer",
+      "golang developer",
+      "clinical python developer",
+      "python scientific informatics engineer",
+      "python technical lead",
+      "yazılım mühendisi",
+      "yazılım geliştirici",
+      "yazılım geliştiricisi"
+    ]
+  },
+
+  "Backend Developer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "backend developer",
+      "backend engineer",
+      "backend software developer",
+      "php backend developer"
+    ]
+  },
+
+  "Frontend Developer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "frontend developer",
+      "front-end developer",
+      "frontend engineer",
+      "front-end engineer",
+      "angular developer"
+    ]
+  },
+
+  "Full Stack Developer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "full stack developer",
+      "full-stack developer",
+      "full stack engineer",
+      "full-stack engineer"
+    ]
+  },
+
+  "Mobile Developer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "mobile developer",
+      "mobile application developer",
+      "android developer",
+      "ios developer",
+      "flutter developer"
+    ]
+  },
+
+  "Game Developer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "game developer"
+    ]
+  },
+
+  "QA Engineer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "qa engineer",
+      "aqa engineer",
+      "qa automation engineer",
+      "test automation engineer"
+    ]
+  },
+
+  "Blockchain Developer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "blockchain engineer",
+      "blockchain developer",
+      "web3 developer"
+    ]
+  },
+
+  "Quantitative Developer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "quantitative developer"
+    ]
+  },
+
+  "Forward Deployed Engineer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "forward deployed engineer"
+    ]
+  },
+
+  "Software Architect": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "software architect"
+    ]
+  },
+
+  "Embedded Developer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "embedded developer"
+    ]
+  },
+
+  "Systems Engineer": {
+    "career_area": "Software Engineering",
+    "aliases": [
+      "vision systems architect"
+    ]
+  },
+
+  "DevOps Engineer": {
+    "career_area": "Cloud, DevOps & Platform",
+    "aliases": [
+      "devops engineer",
+      "devops lead",
+      "data devops engineer",
+      "data devops lead"
+    ]
+  },
+
+  "Platform Engineer": {
+    "career_area": "Cloud, DevOps & Platform",
+    "aliases": [
+      "platform engineer"
+    ]
+  },
+
+  "Cloud Engineer": {
+    "career_area": "Cloud, DevOps & Platform",
+    "aliases": [
+      "cloud engineer",
+      "cloud engineering analyst"
+    ]
+  },
+
+  "Cloud Architect": {
+    "career_area": "Cloud, DevOps & Platform",
+    "aliases": [
+      "cloud architect",
+      "azure architect",
+      "platform architect",
+      "infrastructure architect",
+      "principal system architect"
+    ]
+  },
+
+  "Observability Engineer": {
+    "career_area": "Cloud, DevOps & Platform",
+    "aliases": [
+      "observability engineer"
+    ]
+  },
+
+  "HPC Engineer": {
+    "career_area": "Cloud, DevOps & Platform",
+    "aliases": [
+      "hpc engineer"
+    ]
+  },
+
+  "Tooling Engineer": {
+    "career_area": "Cloud, DevOps & Platform",
+    "aliases": [
+      "tooling engineer"
+    ]
+  },
+
+  "Network Engineer": {
+    "career_area": "Cloud, DevOps & Platform",
+    "aliases": [
+      "networking architect",
+      "network işletim ve operasyon uzmanı"
+    ]
+  },
+
+  "Security Engineer": {
+    "career_area": "Cybersecurity",
+    "aliases": [
+      "security engineer",
+      "information security engineer"
+    ]
+  },
+
+  "Security Analyst": {
+    "career_area": "Cybersecurity",
+    "aliases": [
+      "security analyst",
+      "cyber security analyst",
+      "cybersecurity analyst"
+    ]
+  },
+
+  "SAP Developer": {
+    "career_area": "Enterprise Applications",
+    "aliases": [
+      "sap developer",
+      "abap developer",
+      "sap ui5 developer",
+      "sap cap node.js developer",
+      "abap tech lead",
+      "sap cloud platform developer",
+      "full stack abap/ui5 developer"
+    ]
+  },
+
+  "SAP Consultant": {
+    "career_area": "Enterprise Applications",
+    "aliases": [
+      "sap consultant",
+      "sap analytics consultant",
+      "functional consultant",
+      "sap mdg consultant",
+      "sap mm/sd consulting",
+      "sap basis",
+      "sap business solution architect",
+      "sap development solution architect",
+      "sap technical engineering manager",
+      "sap o2c / p2p business solution architect",
+      "sap r2r business solution architect"
+    ]
+  },
+
+  "SAP Integration Engineer": {
+    "career_area": "Enterprise Applications",
+    "aliases": [
+      "sap joule & multi-agent integration engineer"
+    ]
+  },
+
+  "Salesforce Developer": {
+    "career_area": "Enterprise Applications",
+    "aliases": [
+      "salesforce developer",
+      "cpq developer"
+    ]
+  },
+
+  "Salesforce Architect": {
+    "career_area": "Enterprise Applications",
+    "aliases": [
+      "salesforce technical architect",
+      "salesforce business solution architect"
+    ]
+  },
+
+  "ServiceNow Consultant": {
+    "career_area": "Enterprise Applications",
+    "aliases": [
+      "servicenow consultant",
+      "servicenow architect"
+    ]
+  },
+
+  "Dynamics Developer": {
+    "career_area": "Enterprise Applications",
+    "aliases": [
+      "dynamics crm developer"
+    ]
+  },
+
+  "IT Support": {
+    "career_area": "IT Operations & Support",
+    "aliases": [
+      "it support",
+      "technical support specialist"
+    ]
+  },
+
+  "IT Operations": {
+    "career_area": "IT Operations & Support",
+    "aliases": [
+      "it operations",
+      "it specialist",
+      "it manager",
+      "endpoint operations technician",
+      "unix sistem uzmanı",
+      "network işletim ve operasyon uzmanı"
+    ]
+  }
 }
