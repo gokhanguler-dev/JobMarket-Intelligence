@@ -1,7 +1,8 @@
 {
-  "version": "1.0",
+  "version": "1.2",
   "capabilities": {
     "Data Pipeline Engineering": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Data & Analytics",
         "AI & Machine Learning"
@@ -16,6 +17,7 @@
     },
 
     "ETL/ELT Development": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Data & Analytics"
       ],
@@ -28,6 +30,7 @@
     },
 
     "Data Modeling": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Data & Analytics",
         "Enterprise Applications"
@@ -43,6 +46,7 @@
     },
 
     "Data Warehouse Engineering": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Data & Analytics"
       ],
@@ -55,6 +59,7 @@
     },
 
     "Data Transformation": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Data & Analytics"
       ],
@@ -67,6 +72,7 @@
     },
 
     "Data Workflow Automation": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Data & Analytics",
         "AI & Machine Learning"
@@ -75,11 +81,13 @@
         "Data Engineer",
         "Analytics Engineer",
         "AI Engineer",
-        "Machine Learning Engineer"
+        "Machine Learning Engineer",
+        "AI Architect"
       ]
     },
 
     "Data Product Development": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Data & Analytics",
         "AI & Machine Learning"
@@ -93,6 +101,7 @@
     },
 
     "Data Analysis": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Data & Analytics",
         "AI & Machine Learning"
@@ -101,12 +110,14 @@
         "Data Analyst",
         "BI Analyst",
         "Data Scientist",
+        "Machine Learning Engineer",
         "Analytics Manager",
         "Data Consultant"
       ]
     },
 
     "AI/ML Engineering": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "AI & Machine Learning"
       ],
@@ -119,6 +130,7 @@
     },
 
     "AI Workflow Engineering": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "AI & Machine Learning",
         "Data & Analytics"
@@ -132,6 +144,7 @@
     },
 
     "Application Development": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Software Engineering",
         "Enterprise Applications"
@@ -146,6 +159,7 @@
     },
 
     "Backend Development": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Software Engineering"
       ],
@@ -157,6 +171,7 @@
     },
 
     "Frontend Development": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Software Engineering"
       ],
@@ -168,6 +183,7 @@
     },
 
     "Mobile Application Development": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Software Engineering"
       ],
@@ -177,6 +193,7 @@
     },
 
     "API Development & Integration": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Software Engineering",
         "Enterprise Applications"
@@ -191,6 +208,7 @@
     },
 
     "Software Architecture & System Design": {
+      "context_scope": "cross_functional",
       "career_areas": [
         "Software Engineering",
         "Cloud, DevOps & Platform",
@@ -207,6 +225,7 @@
     },
 
     "Distributed Systems Engineering": {
+      "context_scope": "cross_functional",
       "career_areas": [
         "Software Engineering",
         "Cloud, DevOps & Platform"
@@ -221,6 +240,7 @@
     },
 
     "Cloud Infrastructure Engineering": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Cloud, DevOps & Platform"
       ],
@@ -234,6 +254,7 @@
     },
 
     "Infrastructure Automation": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "Cloud, DevOps & Platform"
       ],
@@ -246,6 +267,7 @@
     },
 
     "CI/CD & Release Engineering": {
+      "context_scope": "cross_functional",
       "career_areas": [
         "Cloud, DevOps & Platform",
         "Software Engineering"
@@ -262,10 +284,12 @@
     },
 
     "Monitoring & Observability": {
+      "context_scope": "cross_functional",
       "career_areas": [
         "Cloud, DevOps & Platform",
         "Software Engineering",
-        "Data & Analytics"
+        "Data & Analytics",
+        "AI & Machine Learning"
       ],
       "roles": [
         "Observability Engineer",
@@ -278,6 +302,7 @@
     },
 
     "Incident Management": {
+      "context_scope": "cross_functional",
       "career_areas": [
         "Cloud, DevOps & Platform",
         "IT Operations & Support",
@@ -292,6 +317,7 @@
     },
 
     "Performance & Scalability Engineering": {
+      "context_scope": "cross_functional",
       "career_areas": [
         "Cloud, DevOps & Platform",
         "Software Engineering"
@@ -307,6 +333,7 @@
     },
 
     "Testing & Quality Engineering": {
+      "context_scope": "cross_functional",
       "career_areas": [
         "Software Engineering"
       ],
@@ -321,6 +348,7 @@
     },
 
     "Security Engineering": {
+      "context_scope": "cross_functional",
       "career_areas": [
         "Cybersecurity",
         "Cloud, DevOps & Platform",
@@ -336,6 +364,7 @@
     },
 
     "Troubleshooting & Technical Support": {
+      "context_scope": "role_sensitive",
       "career_areas": [
         "IT Operations & Support",
         "Cloud, DevOps & Platform"

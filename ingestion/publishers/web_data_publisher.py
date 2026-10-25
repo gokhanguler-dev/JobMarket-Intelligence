@@ -115,7 +115,7 @@ def utc_naive_to_istanbul(value):
 
 def get_next_daily_run(now):
     """
-    Daily Akbank + Lever pipeline:
+    Daily multi-source pipeline:
     every day at 08:00 Europe/Istanbul.
     """
 
@@ -158,7 +158,7 @@ def get_next_jooble_run(now):
 
 
 # ---------------------------------------------------------
-# PUBLISH DATA
+# PUBLISH METADATA
 # ---------------------------------------------------------
 
 def publish_metadata(cursor):
@@ -166,12 +166,21 @@ def publish_metadata(cursor):
     SELECT
         COUNT(*) AS job_count,
         COUNT(DISTINCT CompanyKey) AS company_count,
+
         (
             SELECT COUNT(*)
             FROM dwh.DimSkill
         ) AS skill_count,
+
+        (
+            SELECT COUNT(*)
+            FROM dwh.DimCapability
+        ) AS capability_count,
+
         COUNT(DISTINCT SourceSystem) AS source_count,
+
         MAX(LastObservedAt) AS last_updated
+
     FROM dwh.FactJobPosting;
     """
 
@@ -192,6 +201,7 @@ def publish_metadata(cursor):
         "job_count": row["job_count"],
         "company_count": row["company_count"],
         "skill_count": row["skill_count"],
+        "capability_count": row["capability_count"],
         "source_count": row["source_count"],
 
         "last_updated": (
@@ -206,7 +216,13 @@ def publish_metadata(cursor):
 
         "daily_pipeline": {
             "name": "Daily Sources",
-            "sources": ["Akbank", "Lever"],
+            "sources": [
+                "Akbank",
+                "Lever",
+                "Greenhouse",
+                "Workday",
+                "SmartRecruiters",
+            ],
             "schedule": "Every day · 08:00",
             "next_run": next_daily_run.isoformat(),
         },
@@ -235,6 +251,10 @@ def publish_metadata(cursor):
     print("[OK] metadata.json")
 
 
+# ---------------------------------------------------------
+# PUBLISH TECHNOLOGY DEMAND
+# ---------------------------------------------------------
+
 def publish_skill_demand(cursor):
     query = """
     SELECT *
@@ -247,6 +267,10 @@ def publish_skill_demand(cursor):
         query_to_dicts(cursor, query),
     )
 
+
+# ---------------------------------------------------------
+# PUBLISH ROLE × TECHNOLOGY DEMAND
+# ---------------------------------------------------------
 
 def publish_role_skill_demand(cursor):
     query = """
@@ -261,6 +285,10 @@ def publish_role_skill_demand(cursor):
     )
 
 
+# ---------------------------------------------------------
+# PUBLISH COMPANY TECHNOLOGY STACK
+# ---------------------------------------------------------
+
 def publish_company_tech_stack(cursor):
     query = """
     SELECT *
@@ -274,6 +302,10 @@ def publish_company_tech_stack(cursor):
     )
 
 
+# ---------------------------------------------------------
+# PUBLISH TECHNOLOGY TREND
+# ---------------------------------------------------------
+
 def publish_skill_trend(cursor):
     query = """
     SELECT *
@@ -286,6 +318,43 @@ def publish_skill_trend(cursor):
         query_to_dicts(cursor, query),
     )
 
+
+# ---------------------------------------------------------
+# PUBLISH ROLE × SENIORITY × CAPABILITY DEMAND
+# ---------------------------------------------------------
+
+def publish_role_capability_demand(cursor):
+    query = """
+    SELECT
+         CareerAreaName
+        ,RoleName
+        ,Seniority
+        ,CapabilityCategory
+        ,CapabilityName
+        ,CapabilityJobCount
+        ,CompanyCount
+        ,SourceCount
+        ,RoleSeniorityJobCount
+        ,CapabilityDemandPercentage
+    FROM marts.mart_role_capability_demand
+    ORDER BY
+         CapabilityDemandPercentage DESC
+        ,CapabilityJobCount DESC
+        ,CareerAreaName
+        ,RoleName
+        ,Seniority
+        ,CapabilityName;
+    """
+
+    write_json(
+        "role-capability-demand.json",
+        query_to_dicts(cursor, query),
+    )
+
+
+# ---------------------------------------------------------
+# PUBLISH SOURCE QUALITY
+# ---------------------------------------------------------
 
 def publish_source_quality(cursor):
     query = """
@@ -321,11 +390,21 @@ def main():
         print("[OK] SQL Server connection established.")
         print()
 
+        # -------------------------------------------------
+        # PUBLIC WEB DATASETS
+        # -------------------------------------------------
+
         publish_metadata(cursor)
+
         publish_skill_demand(cursor)
         publish_role_skill_demand(cursor)
+
         publish_company_tech_stack(cursor)
+
         publish_skill_trend(cursor)
+
+        publish_role_capability_demand(cursor)
+
         publish_source_quality(cursor)
 
         print()

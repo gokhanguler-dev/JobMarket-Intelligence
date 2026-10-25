@@ -2,6 +2,10 @@ version: 2
 
 models:
 
+  # ============================================================
+  # INTERMEDIATE: JOB SKILLS
+  # ============================================================
+
   - name: int_job_skills
     description: >
       Enriched job-skill relationships used as the reusable
@@ -25,6 +29,10 @@ models:
           - not_null
 
 
+  # ============================================================
+  # INTERMEDIATE: JOB OBSERVATIONS
+  # ============================================================
+
   - name: int_job_observations
     description: >
       Observation-level history aggregated to one row
@@ -41,5 +49,54 @@ models:
           - not_null
 
       - name: ObservationCount
+        tests:
+          - not_null
+
+
+  # ============================================================
+  # INTERMEDIATE: JOB CAPABILITIES
+  # ============================================================
+
+  - name: int_job_capabilities
+    description: >
+      Enriched job-capability relationships used as the reusable
+      business layer for capability demand analytics. Contains
+      Career Area, normalized Role, Seniority, Capability Category
+      and capability extraction confidence.
+
+    columns:
+      - name: JobPostingKey
+        tests:
+          - not_null
+
+      - name: SourceSystem
+        tests:
+          - not_null
+
+      - name: CareerAreaName
+        tests:
+          - not_null
+
+      - name: RoleName
+        tests:
+          - not_null
+
+      - name: Seniority
+        tests:
+          - not_null
+
+      - name: CapabilityKey
+        tests:
+          - not_null
+
+      - name: CapabilityName
+        tests:
+          - not_null
+
+      - name: CapabilityCategory
+        tests:
+          - not_null
+
+      - name: Confidence
         tests:
           - not_null

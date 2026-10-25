@@ -1,11 +1,17 @@
 version: 2
 
 sources:
+
+  # ============================================================
+  # STAGING SOURCES
+  # ============================================================
+
   - name: stg
     database: JobMarketDWH
     schema: stg
 
     tables:
+
       - name: JobPostingRaw
         description: >
           Raw job posting observations loaded from source-specific
@@ -19,23 +25,61 @@ sources:
         description: >
           Skills detected from processed job posting observations.
 
+
+  # ============================================================
+  # DWH SOURCES
+  # ============================================================
+
   - name: dwh
     database: JobMarketDWH
     schema: dwh
 
     tables:
+
       - name: DimCompany
+        description: >
+          Company dimension containing canonical company entities.
 
       - name: DimLocation
+        description: >
+          Location dimension containing standardized job locations.
 
       - name: DimRole
+        description: >
+          Role dimension containing normalized technology job roles.
 
       - name: DimCareerArea
+        description: >
+          Career Area dimension containing high-level technology
+          career domains.
 
       - name: DimSkill
+        description: >
+          Skill dimension containing technologies detected from
+          job postings.
+
+      - name: DimCapability
+        description: >
+          Capability dimension containing the frozen Capability
+          Taxonomy used for Career Intelligence analytics.
 
       - name: FactJobPosting
+        description: >
+          Canonical job posting fact table containing classification,
+          role, seniority and Career Area information.
 
       - name: FactJobObservation
+        description: >
+          Historical observation fact table used to track job
+          postings across ingestion runs.
 
       - name: BridgeJobPostingSkill
+        description: >
+          Bridge table connecting canonical job postings with
+          detected technologies and skills.
+
+      - name: BridgeJobPostingCapability
+        description: >
+          Bridge table connecting canonical job postings with
+          explicitly detected capabilities and their extraction
+          confidence.

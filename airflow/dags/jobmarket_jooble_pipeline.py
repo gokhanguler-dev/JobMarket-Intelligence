@@ -47,6 +47,7 @@ with DAG(
         "jooble",
         "etl",
         "classification",
+        "capability",
         "dbt",
         "publisher",
     ],
@@ -71,8 +72,9 @@ with DAG(
         append_env=True,
     )
 
+
     # --------------------------------------------------------
-    # 2. LOAD RAW
+    # 2. LOAD JOOBLE RAW
     # --------------------------------------------------------
 
     load_jooble_raw = BashOperator(
@@ -83,6 +85,7 @@ with DAG(
             "ingestion.loaders.jooble_raw_loader"
         ),
     )
+
 
     # --------------------------------------------------------
     # 3. TRANSFORM STAGING
@@ -97,8 +100,9 @@ with DAG(
         ),
     )
 
+
     # --------------------------------------------------------
-    # 4. LOAD DWH
+    # 4. LOAD CORE DWH
     # --------------------------------------------------------
 
     load_dwh = BashOperator(
@@ -109,6 +113,7 @@ with DAG(
             "ingestion.loaders.dwh_loader"
         ),
     )
+
 
     # --------------------------------------------------------
     # 5. CLASSIFY JOBS
@@ -124,8 +129,52 @@ with DAG(
         ),
     )
 
+
     # --------------------------------------------------------
-    # 6. DBT BUILD
+    # 6. LOAD CAPABILITY TAXONOMY
+    # --------------------------------------------------------
+
+    load_capability_taxonomy = BashOperator(
+        task_id="load_capability_taxonomy",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m "
+            "ingestion.loaders.capability_taxonomy_loader"
+        ),
+    )
+
+
+    # --------------------------------------------------------
+    # 7. EXTRACT CAPABILITIES
+    # --------------------------------------------------------
+
+    extract_capabilities = BashOperator(
+        task_id="extract_capabilities",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m "
+            "ingestion.loaders.capability_staging_loader "
+            "--apply"
+        ),
+    )
+
+
+    # --------------------------------------------------------
+    # 8. LOAD CAPABILITY DWH
+    # --------------------------------------------------------
+
+    load_capability_dwh = BashOperator(
+        task_id="load_capability_dwh",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m "
+            "ingestion.loaders.capability_dwh_loader"
+        ),
+    )
+
+
+    # --------------------------------------------------------
+    # 9. DBT BUILD
     # --------------------------------------------------------
 
     dbt_build = BashOperator(
@@ -137,8 +186,9 @@ with DAG(
         ),
     )
 
+
     # --------------------------------------------------------
-    # 7. PUBLISH WEB DATA
+    # 10. PUBLISH WEB DATA
     # --------------------------------------------------------
 
     publish_web_data = BashOperator(
@@ -150,6 +200,7 @@ with DAG(
         ),
     )
 
+
     # --------------------------------------------------------
     # DEPENDENCIES
     # --------------------------------------------------------
@@ -160,6 +211,9 @@ with DAG(
         >> transform_staging
         >> load_dwh
         >> classify_jobs
+        >> load_capability_taxonomy
+        >> extract_capabilities
+        >> load_capability_dwh
         >> dbt_build
         >> publish_web_data
     )

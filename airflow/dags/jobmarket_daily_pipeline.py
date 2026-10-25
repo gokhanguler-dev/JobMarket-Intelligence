@@ -35,7 +35,7 @@ with DAG(
     default_args=default_args,
     start_date=pendulum.datetime(
         2026, 10, 17,
-        tz="Europe/Istanbul"
+        tz="Europe/Istanbul",
     ),
     schedule="0 8 * * *",
     catchup=False,
@@ -43,6 +43,7 @@ with DAG(
         "jobmarket",
         "etl",
         "classification",
+        "capability",
         "dbt",
         "publisher",
     ],
@@ -68,6 +69,30 @@ with DAG(
         ),
     )
 
+    collect_greenhouse = BashOperator(
+        task_id="collect_greenhouse",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m ingestion.collectors.greenhouse_collector"
+        ),
+    )
+
+    collect_workday = BashOperator(
+        task_id="collect_workday",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m ingestion.collectors.workday_collector"
+        ),
+    )
+
+    collect_smartrecruiters = BashOperator(
+        task_id="collect_smartrecruiters",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m ingestion.collectors.smartrecruiters_collector"
+        ),
+    )
+
     # --------------------------------------------------------
     # 2. LOAD RAW
     # --------------------------------------------------------
@@ -88,6 +113,30 @@ with DAG(
         ),
     )
 
+    load_greenhouse_raw = BashOperator(
+        task_id="load_greenhouse_raw",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m ingestion.loaders.greenhouse_raw_loader"
+        ),
+    )
+
+    load_workday_raw = BashOperator(
+        task_id="load_workday_raw",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m ingestion.loaders.workday_raw_loader"
+        ),
+    )
+
+    load_smartrecruiters_raw = BashOperator(
+        task_id="load_smartrecruiters_raw",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m ingestion.loaders.smartrecruiters_raw_loader"
+        ),
+    )
+
     # --------------------------------------------------------
     # 3. TRANSFORM STAGING
     # --------------------------------------------------------
@@ -101,7 +150,7 @@ with DAG(
     )
 
     # --------------------------------------------------------
-    # 4. LOAD DWH
+    # 4. LOAD CORE DWH
     # --------------------------------------------------------
 
     load_dwh = BashOperator(
@@ -127,7 +176,47 @@ with DAG(
     )
 
     # --------------------------------------------------------
-    # 6. DBT BUILD
+    # 6. LOAD CAPABILITY TAXONOMY
+    # --------------------------------------------------------
+
+    load_capability_taxonomy = BashOperator(
+        task_id="load_capability_taxonomy",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m "
+            "ingestion.loaders.capability_taxonomy_loader"
+        ),
+    )
+
+    # --------------------------------------------------------
+    # 7. EXTRACT CAPABILITIES
+    # --------------------------------------------------------
+
+    extract_capabilities = BashOperator(
+        task_id="extract_capabilities",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m "
+            "ingestion.loaders.capability_staging_loader "
+            "--apply"
+        ),
+    )
+
+    # --------------------------------------------------------
+    # 8. LOAD CAPABILITY DWH
+    # --------------------------------------------------------
+
+    load_capability_dwh = BashOperator(
+        task_id="load_capability_dwh",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m "
+            "ingestion.loaders.capability_dwh_loader"
+        ),
+    )
+
+    # --------------------------------------------------------
+    # 9. DBT BUILD
     # --------------------------------------------------------
 
     dbt_build = BashOperator(
@@ -140,7 +229,7 @@ with DAG(
     )
 
     # --------------------------------------------------------
-    # 7. PUBLISH WEB DATA
+    # 10. PUBLISH WEB DATA
     # --------------------------------------------------------
 
     publish_web_data = BashOperator(
@@ -158,16 +247,25 @@ with DAG(
 
     collect_akbank >> load_akbank_raw
     collect_lever >> load_lever_raw
+    collect_greenhouse >> load_greenhouse_raw
+    collect_workday >> load_workday_raw
+    collect_smartrecruiters >> load_smartrecruiters_raw
 
     [
         load_akbank_raw,
         load_lever_raw,
+        load_greenhouse_raw,
+        load_workday_raw,
+        load_smartrecruiters_raw,
     ] >> transform_staging
 
     (
         transform_staging
         >> load_dwh
         >> classify_jobs
+        >> load_capability_taxonomy
+        >> extract_capabilities
+        >> load_capability_dwh
         >> dbt_build
         >> publish_web_data
     )

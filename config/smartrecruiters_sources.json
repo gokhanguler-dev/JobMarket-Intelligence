@@ -1,0 +1,22 @@
+{
+  "sources": [
+    {
+      "company": "Securitas",
+      "company_identifier": "Securitas",
+      "country": "tr",
+      "enabled": true
+    },
+    {
+      "company": "Bosch Group",
+      "company_identifier": "BoschGroup",
+      "country": "tr",
+      "enabled": true
+    },
+    {
+      "company": "CRENNO",
+      "company_identifier": "CRENNO",
+      "country": "tr",
+      "enabled": true
+    }
+  ]
+}

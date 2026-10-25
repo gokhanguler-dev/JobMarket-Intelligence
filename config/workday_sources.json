@@ -1,0 +1,28 @@
+{
+  "sources": [
+    {
+      "company": "ING",
+      "tenant": "ing",
+      "site": "ICSGBLCOR",
+      "host": "ing.wd3.myworkdayjobs.com",
+      "location_facets": [
+        "ce48b83a7cfc10009a5e7d4535250000"
+      ],
+      "location_name": "Istanbul (VADI ISTANBUL PARK)",
+      "country": "Türkiye",
+      "enabled": true
+    },
+    {
+      "company": "Accenture",
+      "tenant": "accenture",
+      "site": "AccentureCareers",
+      "host": "accenture.wd103.myworkdayjobs.com",
+      "location_facets": [
+        "c2e3bac5bbbb47b29dfc6e8b56a1586e"
+      ],
+      "location_name": "Türkiye",
+      "country": "Türkiye",
+      "enabled": false
+    }
+  ]
+}
