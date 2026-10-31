@@ -76,3 +76,5 @@ v42_profile.txt
 
 # Generated web data
 web/public/data/
+# Local deployment backups
+*.backup

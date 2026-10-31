@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 import requests
-from dotenv import load_dotenv
+from config.env_loader import load_project_env
 
 
 # ============================================================
@@ -14,7 +14,6 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 
-ENV_PATH = BASE_DIR / ".env"
 
 CONFIG_PATH = (
     BASE_DIR
@@ -38,7 +37,7 @@ RAW_DATA_DIR.mkdir(
 # ENVIRONMENT
 # ============================================================
 
-load_dotenv(ENV_PATH)
+load_project_env(BASE_DIR)
 
 API_KEY = os.getenv("JOOBLE_API_KEY")
 

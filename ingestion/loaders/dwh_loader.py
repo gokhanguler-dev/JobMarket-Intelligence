@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 import pyodbc
-from dotenv import load_dotenv
+from config.env_loader import load_project_env
 
 
 # ============================================================
@@ -11,10 +11,9 @@ from dotenv import load_dotenv
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-ENV_PATH = BASE_DIR / ".env"
 DWH_SQL_DIR = BASE_DIR / "sql" / "dwh"
 
-load_dotenv(ENV_PATH)
+load_project_env(BASE_DIR)
 
 
 # ============================================================

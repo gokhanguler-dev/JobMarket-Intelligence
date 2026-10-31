@@ -7,13 +7,13 @@ from pathlib import Path
 
 import pyodbc
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
+from config.env_loader import load_project_env
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = PROJECT_ROOT / "data" / "raw"
 
-load_dotenv(PROJECT_ROOT / ".env")
+load_project_env(PROJECT_ROOT)
 
 
 def get_connection():

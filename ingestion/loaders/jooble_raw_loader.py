@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pyodbc
-from dotenv import load_dotenv
+from config.env_loader import load_project_env
 
 
 # ============================================================
@@ -12,10 +12,9 @@ from dotenv import load_dotenv
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-ENV_PATH = BASE_DIR / ".env"
 RAW_DATA_DIR = BASE_DIR / "data" / "raw"
 
-load_dotenv(ENV_PATH)
+load_project_env(BASE_DIR)
 
 
 # ============================================================

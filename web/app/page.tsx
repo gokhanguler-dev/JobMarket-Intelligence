@@ -1,5 +1,4 @@
-
-
+export const dynamic = "force-dynamic";
 
 type PipelineSchedule = {
   name: string;

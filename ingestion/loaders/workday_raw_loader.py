@@ -6,7 +6,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 import pyodbc
-from dotenv import load_dotenv
+from config.env_loader import load_project_env
 
 
 # ---------------------------------------------------------
@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parents[2]
 RAW_DIR = BASE_DIR / "data" / "raw"
 
-load_dotenv(BASE_DIR / ".env")
+load_project_env(BASE_DIR)
 
 
 # ---------------------------------------------------------

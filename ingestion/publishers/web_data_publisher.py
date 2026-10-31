@@ -6,7 +6,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pyodbc
-from dotenv import load_dotenv
+from config.env_loader import load_project_env
 
 
 # ---------------------------------------------------------
@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-load_dotenv(PROJECT_ROOT / ".env")
+load_project_env(PROJECT_ROOT)
 
 OUTPUT_DIR = PROJECT_ROOT / "web" / "public" / "data"
 

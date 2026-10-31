@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import pyodbc
-from dotenv import load_dotenv
+from config.env_loader import load_project_env
 
 from ingestion.parsers.job_classifier import classify_job
 
@@ -12,9 +12,8 @@ from ingestion.parsers.job_classifier import classify_job
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-ENV_PATH = BASE_DIR / ".env"
 
-load_dotenv(ENV_PATH)
+load_project_env(BASE_DIR)
 
 
 # ============================================================

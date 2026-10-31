@@ -13,8 +13,9 @@ services:
       MSSQL_PID: "Developer"
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
 
+    # VPS: SQL Server sadece localhost üzerinden erişilebilir.
     ports:
-      - "1433:1433"
+      - "127.0.0.1:1433:1433"
 
     volumes:
       - jobmarket_sqlserver_data:/var/opt/mssql
@@ -71,7 +72,7 @@ services:
     volumes:
       - ./:/opt/airflow/jobmarket
       - ./airflow/dags:/opt/airflow/dags
-      - ${USERPROFILE}/.dbt:/opt/airflow/.dbt
+      - ${HOME}/.dbt:/opt/airflow/.dbt
 
     working_dir: /opt/airflow/jobmarket
 
@@ -123,13 +124,14 @@ services:
 
       JOOBLE_API_KEY: ${JOOBLE_API_KEY}
 
+    # VPS: Airflow UI sadece localhost üzerinden erişilebilir.
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
 
     volumes:
       - ./:/opt/airflow/jobmarket
       - ./airflow/dags:/opt/airflow/dags
-      - ${USERPROFILE}/.dbt:/opt/airflow/.dbt
+      - ${HOME}/.dbt:/opt/airflow/.dbt
 
     working_dir: /opt/airflow/jobmarket
 
@@ -175,13 +177,34 @@ services:
     volumes:
       - ./:/opt/airflow/jobmarket
       - ./airflow/dags:/opt/airflow/dags
-      - ${USERPROFILE}/.dbt:/opt/airflow/.dbt
+      - ${HOME}/.dbt:/opt/airflow/.dbt
 
     working_dir: /opt/airflow/jobmarket
 
     command: airflow scheduler
 
     restart: unless-stopped
+
+
+  # ==========================================================
+  # CAREER RADAR WEB
+  # ==========================================================
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+
+    container_name: jobmarket-web
+
+    ports:
+      - "127.0.0.1:3000:3000"
+
+    volumes:
+      - ./web/public/data:/app/public/data:ro
+
+    restart: unless-stopped
+
 
 
 # ============================================================

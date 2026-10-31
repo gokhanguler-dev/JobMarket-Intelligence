@@ -37,7 +37,7 @@ with DAG(
         2026, 10, 17,
         tz="Europe/Istanbul",
     ),
-    schedule="0 8 * * *",
+    schedule="0 8,14,20 * * *",
     catchup=False,
     tags=[
         "jobmarket",
