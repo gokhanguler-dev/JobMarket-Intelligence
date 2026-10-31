@@ -1,166 +1,418 @@
-# JobMarket Intelligence
+# Career Radar — JobMarket Intelligence
 
-An end-to-end **data engineering and career intelligence platform** that transforms multi-source technology job postings into structured market intelligence about roles, technologies, capabilities, seniority, and employer demand.
+> **Don't just search for your next job. Understand your next move.**
 
-The project is built around a simple question:
+**Career Radar** is an end-to-end data engineering and career intelligence platform that continuously transforms multi-source technology job postings into structured market intelligence about roles, seniority, technologies, capabilities, companies, and employer demand.
 
-> **What does the technology job market expect, and what should a technology professional learn next?**
+Instead of treating job postings as isolated vacancies, the project treats the **technology job market as a continuously observed dataset**.
+
+The platform currently runs as a cloud-hosted pipeline that collects job postings, preserves historical observations, resolves canonical jobs, classifies technology roles, extracts technology and capability signals, builds analytical marts, and publishes curated data to a public-facing Next.js application.
+
+The long-term goal is to turn this market intelligence into personalized career guidance:
+
+**Where do I fit in the market, what am I missing, and what should I learn next?**
 
 ---
 
-## Why This Project?
+## Project Status
 
-Traditional job boards are designed to help users find individual vacancies.
+Career Radar has evolved from a local data engineering project into an operational multi-source cloud pipeline.
 
-**JobMarket Intelligence treats the job market as a dataset.**
+### Currently in Production
 
-The platform continuously collects job postings from multiple sources, standardizes semi-structured data, builds an analytical warehouse, classifies technology roles, extracts market signals, and transforms those signals into career intelligence.
+- Multi-source job ingestion
+- Incremental market observations
+- Canonical job identity resolution
+- Technology / non-technology classification
+- Career Area classification
+- Normalized Role classification
+- Seniority classification
+- Technology extraction
+- Capability extraction
+- SQL Server dimensional warehouse
+- dbt analytical marts and data-quality tests
+- Apache Airflow orchestration
+- JSON serving-layer publisher
+- Next.js public web application
+- Docker-based cloud deployment
+- Caddy reverse proxy
+- Scheduled autonomous ingestion
 
-The project aims to answer questions such as:
+### Production Snapshot — October 31, 2026
+
+| Metric | Value |
+|---|---:|
+| Canonical Job Postings | **702** |
+| Historical Job Observations | **10,007** |
+| Technologies | **97** |
+| Capability Definitions | **26** |
+| Job ↔ Technology Relationships | **772** |
+| Job ↔ Capability Relationships | **210** |
+| Data Sources | **6** |
+
+> The production dataset changes continuously as scheduled pipelines collect new market observations.
+
+---
+
+# Why This Project?
+
+Traditional job boards are optimized around a question:
+
+> **Which jobs can I apply to?**
+
+Career Radar is designed around a different set of questions:
+
+> **What does the technology job market currently demand?**
+
+> **How does that demand differ by role and seniority?**
+
+> **Where does my current profile fit into that market?**
+
+> **What should I learn next?**
+
+The platform is designed to answer questions such as:
 
 - Which technology career areas are hiring?
-- Which roles are most in demand?
-- Which technologies are requested most frequently?
-- How do technology requirements differ across roles and seniority levels?
-- What capabilities do employers expect beyond individual tools?
+- Which roles are most frequently observed?
+- Which technologies are most requested?
+- How does technology demand differ across roles?
+- How does demand change by seniority?
+- Which capabilities do employers expect beyond individual tools?
 - Which technology stacks commonly appear together?
-- How is technology demand changing over time?
-- What should a technology professional learn next?
+- Which companies request similar technology profiles?
+- How is demand changing over time?
+- Which skills provide the broadest market coverage?
+- Which capabilities are important for a target role?
+- What are the highest-value gaps in a professional's current profile?
 
-The long-term product direction is a **Career Radar** that combines market evidence with a user's existing skills to identify career fit, skill gaps, and recommended next learning steps.
-
----
-
-## Current Data Snapshot
-
-| Metric | Current Value |
-|---|---:|
-| Unique Job Postings | 531 |
-| Companies | 78 |
-| Classified Tech Jobs | 273 |
-| Observed Technologies | 93 |
-| Data Sources | 3 |
-| Capability Definitions | 26 |
-| Capability Categories | 7 |
-
-> The dataset grows incrementally as scheduled ingestion pipelines collect new observations.
+The project therefore combines **data engineering**, **analytics engineering**, and an evolving **career intelligence product layer**.
 
 ---
 
-## Architecture
+# System Architecture
+
+Career Radar separates ingestion, standardization, warehouse modeling, intelligence extraction, analytics, and serving into independent layers.
 
 ```text
-                    JOB SOURCES
-                         │
-              ┌──────────┼──────────┐
-              │          │          │
-            Jooble      Lever     Akbank
-              │          │          │
-              └──────────┼──────────┘
-                         ▼
-                 Python Collectors
-                         │
-                         ▼
-                   RAW / Staging
-                         │
-                         ▼
-                 SQL Server DWH
-                         │
-          ┌──────────────┼──────────────┐
-          │              │              │
-          ▼              ▼              ▼
-   Job Classification  Skill        Capability
-                       Extraction    Extraction
-          │              │              │
-          └──────────────┼──────────────┘
-                         ▼
-                        dbt
-                         │
-                         ▼
-                 Analytical Marts
-                         │
-                         ▼
-                  Serving Layer
-                         │
-              ┌──────────┴──────────┐
-              ▼                     ▼
-          Streamlit              Next.js
-          Analytics              Public Web
+                         EXTERNAL JOB SOURCES
+                                  │
+          ┌───────────────────────┼───────────────────────┐
+          │                       │                       │
+       Job APIs                ATS APIs            Career Platforms
+          │                       │                       │
+          └───────────────────────┼───────────────────────┘
+                                  │
+                                  ▼
+                         Source Collectors
+                                  │
+                                  ▼
+                        RAW Source Records
+                                  │
+                                  ▼
+                      Standardized Staging
+                                  │
+                    ┌─────────────┴─────────────┐
+                    │                           │
+                    ▼                           ▼
+              Canonical Jobs              Job Observations
+                    │                           │
+                    └─────────────┬─────────────┘
+                                  ▼
+                         SQL Server DWH
+                                  │
+          ┌───────────────────────┼───────────────────────┐
+          │                       │                       │
+          ▼                       ▼                       ▼
+   Job Classification     Technology Extraction   Capability Extraction
+          │                       │                       │
+          └───────────────────────┼───────────────────────┘
+                                  ▼
+                                 dbt
+                                  │
+                                  ▼
+                         Analytical Marts
+                                  │
+                                  ▼
+                         JSON Publisher
+                                  │
+                                  ▼
+                       Next.js Career Radar
 ```
 
-**Apache Airflow** orchestrates the ingestion, transformation, classification, warehouse loading, analytics, and publishing workflows.
-
-The architecture separates:
-
-- data collection
-- source standardization
-- warehouse modeling
-- job classification
-- technology extraction
-- capability extraction
-- analytics engineering
-- orchestration
-- serving and presentation
-
-into independent layers.
+**Apache Airflow** orchestrates the complete workflow.
 
 ---
 
-## Data Sources
+# Production Architecture
 
-The pipeline currently integrates job postings using dedicated source adapters.
+The production system runs continuously on a Linux cloud VPS using Docker Compose.
 
-| Source | Integration |
+```text
+                              INTERNET
+                                 │
+                                 ▼
+                               Caddy
+                         Reverse Proxy Layer
+                                 │
+                                 ▼
+                         Next.js Career Radar
+                                 │
+                                 ▼
+                         Published JSON Data
+                                 ▲
+                                 │
+                         Web Data Publisher
+                                 ▲
+                                 │
+                                dbt
+                                 ▲
+                                 │
+                         SQL Server DWH
+                                 ▲
+                                 │
+                              Airflow
+                                 ▲
+                                 │
+                       External Job Sources
+```
+
+The main services run inside the same cloud environment:
+
+```text
+┌──────────────────────── Cloud VPS ─────────────────────────┐
+│                                                           │
+│   Docker Compose                                          │
+│                                                           │
+│   ┌───────────────┐      ┌─────────────────────────────┐  │
+│   │ Apache Airflow│─────►│ SQL Server JobMarketDWH     │  │
+│   └───────────────┘      └─────────────────────────────┘  │
+│           │                                               │
+│           │                ┌────────────────────────────┐ │
+│           └───────────────►│ PostgreSQL                 │ │
+│                            │ Airflow Metadata           │ │
+│                            └────────────────────────────┘ │
+│                                                           │
+│   ┌───────────────┐      ┌─────────────────────────────┐  │
+│   │      dbt      │─────►│ Analytical Marts            │  │
+│   └───────────────┘      └─────────────────────────────┘  │
+│                                                           │
+│   ┌───────────────┐      ┌─────────────────────────────┐  │
+│   │   Publisher   │─────►│ Next.js                     │  │
+│   └───────────────┘      │ Career Radar                │  │
+│                          └─────────────────────────────┘  │
+│                                      │                    │
+│                                      ▼                    │
+│                                    Caddy                  │
+│                                                           │
+└───────────────────────────────────────────────────────────┘
+```
+
+This allows the complete pipeline to operate independently of a developer workstation.
+
+---
+
+# Data Sources
+
+Career Radar currently integrates **six source families / platforms** through dedicated adapters.
+
+| Source | Integration Strategy |
 |---|---|
 | Jooble | Job Search API |
-| Lever-hosted company career sites | Lever Postings API |
-| Akbank Career | Career API |
+| Lever | Lever-hosted company career sites |
+| Akbank Career | First-party career API |
+| Greenhouse | Greenhouse-hosted career boards |
+| Workday | Workday-hosted career platform |
+| SmartRecruiters | SmartRecruiters-hosted career sites |
 
-Lever ingestion is configuration-driven and can collect postings from multiple company career sites without changing downstream processing logic.
+### Current Canonical Job Distribution
 
-Each source ultimately conforms to a **common staging contract**, allowing additional sources to be introduced without redesigning the warehouse.
+| Source | Canonical Jobs |
+|---|---:|
+| Jooble | 294 |
+| Lever | 237 |
+| SmartRecruiters | 70 |
+| Workday | 41 |
+| Akbank | 32 |
+| Greenhouse | 28 |
+| **Total** | **702** |
+
+The architecture intentionally uses **source-specific adapters** while enforcing a shared downstream staging contract.
+
+This means a new source can be introduced without redesigning the analytical warehouse.
 
 ---
 
-## Data Pipeline
+# Collection Strategy
 
-### 1. Multi-Source Ingestion
+Not all sources are treated equally.
 
-Python collectors retrieve job postings from APIs and company career platforms.
+First-party career sources and ATS platforms provide relatively direct market observations and can be collected frequently.
 
-Raw responses are preserved before transformation, providing lineage between source data and analytical warehouse records.
+Aggregator APIs such as Jooble are useful for market breadth but may have stricter API quotas and different duplication characteristics.
 
-### 2. Standardized Staging
+For this reason, Career Radar uses separate orchestration strategies.
 
-Source-specific structures are normalized into a common job-posting contract containing fields such as:
+## Multi-Source Daily Pipeline
 
-- source system
-- source platform
-- source job identifier
-- job title
-- company
-- location
-- description
-- employment type
-- work model
-- source timestamps
-- extraction timestamp
-- discovery keyword
-- raw source file
+The primary source pipeline runs every day at:
 
-This isolates downstream models from differences between external APIs.
+```text
+08:00
+14:00
+20:00
+```
 
-### 3. Job Classification
+Timezone:
 
-Raw job titles are not reliable analytical dimensions.
+```text
+Europe/Istanbul
+```
 
-For example, a title such as:
+The pipeline currently collects from:
+
+```text
+Akbank
+Lever
+Greenhouse
+Workday
+SmartRecruiters
+```
+
+## Jooble Pipeline
+
+Jooble runs separately using a quota-aware schedule:
+
+```text
+Tuesday  09:00
+Friday   09:00
+```
+
+This prevents unnecessary API consumption while still adding broader market discovery.
+
+---
+
+# End-to-End Data Pipeline
+
+## 1. Source Collection
+
+Python collectors communicate with source APIs and ATS platforms.
+
+Each source adapter is responsible for understanding its external contract.
+
+Collectors preserve source-specific information rather than forcing all APIs directly into the warehouse model.
+
+---
+
+## 2. RAW Layer
+
+Raw source records are preserved before analytical transformation.
+
+This provides:
+
+- source lineage
+- reproducibility
+- debugging support
+- historical evidence
+- protection against upstream schema differences
+
+The RAW layer represents **what the external source returned**.
+
+---
+
+## 3. Standardized Staging
+
+Source-specific structures are transformed into a common job-posting contract.
+
+Typical standardized attributes include:
+
+```text
+SourceSystem
+SourcePlatform
+SourceJobID
+JobTitle
+Company
+Location
+Description
+EmploymentType
+WorkModel
+SourceTimestamp
+ExtractionTimestamp
+SearchKeyword
+RawSourceFile
+```
+
+This staging contract isolates downstream logic from differences between external APIs.
+
+---
+
+# Canonical Job vs. Job Observation
+
+One of the most important modeling decisions in Career Radar is separating a **job posting** from an **observation of that posting**.
+
+A source-level vacancy is identified using:
+
+```text
+(SourceSystem, SourceJobID)
+```
+
+## Canonical Job
+
+`FactJobPosting` represents the unique source-level vacancy.
+
+If the same Lever job is collected twenty times, it is still one canonical job.
+
+## Job Observation
+
+`FactJobObservation` represents an individual observation of that vacancy by the ingestion system.
+
+For example:
+
+```text
+Job A
+│
+├── Observed Monday 08:00
+├── Observed Monday 14:00
+├── Observed Monday 20:00
+├── Observed Tuesday 08:00
+└── Observed Tuesday 14:00
+```
+
+becomes:
+
+```text
+1 Canonical Job
+5 Job Observations
+```
+
+This prevents repeated collection from artificially inflating vacancy counts while preserving historical market state.
+
+As of the current production snapshot:
+
+```text
+702 canonical jobs
+10,007 historical observations
+```
+
+This model supports both:
+
+- current-state market intelligence
+- historical demand analysis
+
+---
+
+# Job Classification
+
+External job titles are noisy and inconsistent.
+
+A title such as:
 
 ```text
 Senior Data Software Engineer / Airflow, Snowflake, AI, dbt
 ```
 
-can be transformed into structured dimensions:
+cannot be used directly as a reliable analytical dimension.
+
+Career Radar therefore derives a structured classification:
 
 ```text
 IsTechRole   = Tech
@@ -169,20 +421,20 @@ Role         = Data Engineer
 Seniority    = Senior
 ```
 
-The classification pipeline derives:
+The classification layer derives:
 
 - Tech / Non-Tech status
 - Career Area
 - normalized Role
 - Seniority
 
-Classification rules are configuration-driven and follow a **precision-first approach**.
+Classification logic follows a **precision-first approach** and is driven by configuration rather than hardcoded reporting logic.
 
 ---
 
-## Career Area Taxonomy
+# Career Area Taxonomy
 
-Technology jobs are currently organized into the following high-level career areas:
+Technology jobs are currently organized into eight high-level career areas:
 
 1. Data & Analytics
 2. AI & Machine Learning
@@ -193,33 +445,51 @@ Technology jobs are currently organized into the following high-level career are
 7. IT Operations & Support
 8. Other Tech
 
-This creates a stable analytical layer above inconsistent source job titles.
+These areas create a stable analytical layer above inconsistent source titles.
+
+Normalized roles sit below Career Area, followed by Seniority.
+
+Conceptually:
+
+```text
+Technology Market
+       │
+       ▼
+  Career Area
+       │
+       ▼
+      Role
+       │
+       ▼
+   Seniority
+```
 
 ---
 
-## Technology Intelligence
+# Technology Intelligence
 
-Job descriptions are analyzed using a configuration-driven technology taxonomy.
+Career Radar analyzes job descriptions using a configuration-driven technology taxonomy.
 
-The current taxonomy supports more than 100 technology definitions, with **93 technologies currently observed** in collected market data.
+The taxonomy currently supports more than 100 technology definitions, with **97 technologies currently observed in production data**.
 
 Examples include:
 
 ```text
 Python
 SQL
+Java
+.NET
 AWS
 Azure
 GCP
 Databricks
 Spark
-Terraform
-Docker
-Kubernetes
 Airflow
 dbt
-.NET
-Java
+Docker
+Kubernetes
+Terraform
+Kafka
 Salesforce
 SAP
 ```
@@ -228,15 +498,29 @@ Technology extraction enables analysis such as:
 
 - overall technology demand
 - role-specific technology demand
+- seniority-specific demand
 - company technology stacks
 - technology co-occurrence
-- technology trends over time
+- historical technology trends
+- market breadth
+
+The warehouse currently contains:
+
+```text
+772 Job ↔ Technology relationships
+```
 
 ---
 
-## Capability Intelligence
+# Capability Intelligence
 
-Knowing which technologies appear in a job posting does not fully describe what employers expect candidates to **do**.
+Technologies answer:
+
+> **Which tools appear in the market?**
+
+Capabilities answer:
+
+> **What are employers expecting professionals to be able to do?**
 
 For example:
 
@@ -244,57 +528,62 @@ For example:
 Technology Signals
 ------------------
 Airflow
-Terraform
 AWS
-GitHub Actions
+Terraform
 Spark
+GitHub Actions
 ```
 
-may correspond to capabilities such as:
+can provide evidence for capabilities such as:
 
 ```text
 Data Pipeline Engineering
 Data Workflow Automation
-Infrastructure Automation
 Cloud Infrastructure Engineering
+Infrastructure Automation
 CI/CD & Release Engineering
+Distributed Systems Engineering
 ```
 
-The project therefore includes an additional **Capability Intelligence** layer.
+Career Radar therefore includes a separate **Capability Intelligence** layer.
 
-Capability Taxonomy V1 currently contains:
+## Capability Taxonomy
+
+Capability Taxonomy V1.2 currently contains:
 
 - **26 capabilities**
 - **7 capability categories**
 
-Current capability areas include:
+Current capabilities include:
 
-- Data Pipeline Engineering
-- ETL/ELT Development
-- Data Modeling
-- Data Warehouse Engineering
-- Data Transformation
-- Data Workflow Automation
-- Data Product Development
-- Data Analysis
-- AI/ML Engineering
-- AI Workflow Engineering
-- Application Development
-- Backend Development
-- Frontend Development
-- Mobile Application Development
-- API Development & Integration
-- Software Architecture & System Design
-- Distributed Systems Engineering
-- Cloud Infrastructure Engineering
-- Infrastructure Automation
-- CI/CD & Release Engineering
-- Monitoring & Observability
-- Incident Management
-- Performance & Scalability Engineering
-- Testing & Quality Engineering
-- Security Engineering
-- Troubleshooting & Technical Support
+```text
+Data Pipeline Engineering
+ETL/ELT Development
+Data Modeling
+Data Warehouse Engineering
+Data Transformation
+Data Workflow Automation
+Data Product Development
+Data Analysis
+AI/ML Engineering
+AI Workflow Engineering
+Application Development
+Backend Development
+Frontend Development
+Mobile Application Development
+API Development & Integration
+Software Architecture & System Design
+Distributed Systems Engineering
+Cloud Infrastructure Engineering
+Infrastructure Automation
+CI/CD & Release Engineering
+Monitoring & Observability
+Incident Management
+Performance & Scalability Engineering
+Testing & Quality Engineering
+Security Engineering
+Troubleshooting & Technical Support
+```
 
 Capability extraction combines textual evidence with job context.
 
@@ -306,143 +595,179 @@ For example:
 Role = Data Engineer
         +
 Career Area = Data & Analytics
-        ↓
+        │
+        ▼
 Data Pipeline Engineering
 ```
 
-This context-aware approach helps reduce false positives caused by company descriptions, generic text, and terminology that has different meanings across roles.
+Context-aware extraction helps reduce false positives caused by:
 
-> **Capability Taxonomy V1 is currently under active profiling and validation before being promoted into the production warehouse model.**
+- company descriptions
+- generic terminology
+- ambiguous keywords
+- terminology with different meanings across roles
 
----
+Capability Intelligence is now integrated into the production pipeline.
 
-## Data Warehouse
-
-Standardized data is loaded into a dimensional **SQL Server** warehouse.
-
-### Core Dimensions
-
-- `DimCompany`
-- `DimLocation`
-- `DimRole`
-- `DimSkill`
-- `DimCareerArea`
-
-### Core Facts
-
-- `FactJobPosting`
-- `FactJobObservation`
-
-### Bridges
-
-- `BridgeJobPostingSkill`
-
-The capability model is currently being prepared for:
-
-- `DimCapability`
-- `BridgeJobPostingCapability`
-
----
-
-## Job Identity vs. Observation
-
-One of the key modeling decisions is separating a **job posting** from an **observation of that posting**.
-
-A unique source-level vacancy is identified using:
+Current production warehouse:
 
 ```text
-(SourceSystem, SourceJobID)
+DimCapability                   = 26
+BridgeJobPostingCapability      = 210 relationships
 ```
-
-`FactJobPosting` represents the canonical vacancy.
-
-`FactJobObservation` records when that vacancy was observed by the ingestion pipeline.
-
-This prevents repeated collection from being interpreted as new vacancies while still preserving historical market observations.
-
-The model therefore supports both:
-
-- current-state market analytics
-- historical market analysis
 
 ---
 
-## Analytics Engineering with dbt
+# Data Warehouse
 
-dbt transforms warehouse data into analytics-ready models.
+Career Radar uses a dimensional **Microsoft SQL Server** warehouse.
 
-Current analytical marts include:
+The model separates reusable dimensions, canonical vacancies, historical observations, and many-to-many intelligence relationships.
 
-### `mart_skill_demand`
+## Core Dimensions
 
-Measures overall technology demand across job postings.
+```text
+DimCompany
+DimLocation
+DimCareerArea
+DimRole
+DimSkill
+DimCapability
+```
 
-### `mart_role_skill_demand`
+## Core Facts
 
-Measures technology demand within individual job roles.
+```text
+FactJobPosting
+FactJobObservation
+```
 
-### `mart_company_tech_stack`
+## Bridges
 
-Provides a view of technologies appearing across companies.
+```text
+BridgeJobPostingSkill
+BridgeJobPostingCapability
+```
 
-### `mart_skill_trend`
+Conceptually:
+
+```text
+                     DimCompany
+                         │
+                         │
+DimLocation ───── FactJobPosting ───── DimRole
+                         │
+                         │
+                   DimCareerArea
+                         │
+            ┌────────────┴────────────┐
+            │                         │
+            ▼                         ▼
+ BridgeJobPostingSkill     BridgeJobPostingCapability
+            │                         │
+            ▼                         ▼
+        DimSkill                 DimCapability
+
+FactJobPosting
+      │
+      ▼
+FactJobObservation
+```
+
+---
+
+# Analytics Engineering with dbt
+
+dbt transforms warehouse data into analytics-ready marts.
+
+Current production marts include:
+
+## `mart_skill_demand`
+
+Measures overall technology demand.
+
+## `mart_role_skill_demand`
+
+Measures technology demand within normalized roles.
+
+## `mart_company_tech_stack`
+
+Provides a market view of technologies appearing across companies.
+
+## `mart_source_quality`
+
+Monitors ingestion and source coverage.
+
+## `mart_skill_trend`
 
 Tracks observed technology demand over time.
 
-### `mart_source_quality`
+## `mart_career_area_overview`
 
-Monitors ingestion quality and coverage across different sources.
+Provides aggregated intelligence across technology career areas.
 
-### `mart_career_area_overview`
+## `mart_role_seniority_demand`
 
-Provides market-level analytics across technology career areas.
+Measures market demand across normalized roles and seniority levels.
 
-### `mart_role_seniority_demand`
+## `mart_role_capability_demand`
 
-Measures demand across normalized roles and seniority levels.
+Measures capability demand within normalized technology roles.
 
-dbt tests validate model integrity and important data-quality assumptions.
+dbt is also used as a data-quality layer.
 
-Planned career-intelligence marts include:
+Production builds validate:
 
-```text
-mart_role_capability_demand
-mart_role_professional_skill_demand
-mart_role_profile
-mart_career_recommendation
-```
+- relationships
+- accepted values
+- uniqueness
+- non-null assumptions
+- model-level integrity
+- taxonomy relationships
+
+A full production build currently executes more than 100 models/tests successfully.
 
 ---
 
-## Orchestration
+# Airflow Orchestration
 
-**Apache Airflow** orchestrates the end-to-end data workflows.
+Apache Airflow orchestrates the complete production workflow.
 
-### Daily Pipeline
+## Primary Pipeline
 
 ```text
-Akbank Collector ──► Akbank RAW Loader ──┐
-                                         │
-Lever Collector ───► Lever RAW Loader ───┤
-                                         ▼
-                                Staging Transform
-                                         │
-                                         ▼
-                                     DWH Load
-                                         │
-                                         ▼
-                                Job Classification
-                                         │
-                                         ▼
-                                     dbt Build
-                                         │
-                                         ▼
-                                  Web Publishing
+Akbank Collector ─────────► Akbank RAW Loader ───────────┐
+Lever Collector ──────────► Lever RAW Loader ────────────┤
+Greenhouse Collector ─────► Greenhouse RAW Loader ───────┤
+Workday Collector ─────────► Workday RAW Loader ─────────┤
+SmartRecruiters Collector ─► SmartRecruiters RAW Loader ─┤
+                                                         │
+                                                         ▼
+                                                Staging Transform
+                                                         │
+                                                         ▼
+                                                     DWH Load
+                                                         │
+                                                         ▼
+                                                Job Classification
+                                                         │
+                                                         ▼
+                                             Capability Taxonomy Load
+                                                         │
+                                                         ▼
+                                             Capability Extraction
+                                                         │
+                                                         ▼
+                                              Capability DWH Load
+                                                         │
+                                                         ▼
+                                                     dbt Build
+                                                         │
+                                                         ▼
+                                                  Web Publisher
 ```
 
-### Jooble Pipeline
-
-Jooble ingestion runs separately using a **quota-aware collection strategy**.
+## Jooble Pipeline
 
 ```text
 Jooble Collector
@@ -460,41 +785,431 @@ DWH Load
 Job Classification
        │
        ▼
+Capability Taxonomy
+       │
+       ▼
+Capability Extraction
+       │
+       ▼
+Capability DWH Load
+       │
+       ▼
 dbt Build
+       │
+       ▼
+Web Publisher
 ```
-
-The local development environment uses Airflow with `SequentialExecutor`, keeping infrastructure appropriate for the current workload.
 
 Airflow metadata is stored in PostgreSQL separately from the analytical SQL Server warehouse.
 
 ---
 
-## Analytics Applications
+# Serving Layer
 
-### Streamlit Analytics Dashboard
+The public web application does **not** query the analytical SQL Server database directly.
 
-The Streamlit application provides an internal analytical interface for exploring:
+Instead:
 
-- market KPIs
-- technology demand
-- role distribution
-- technology trends
-- company technology stacks
-- source quality
+```text
+SQL Server
+    │
+    ▼
+   dbt
+    │
+    ▼
+Analytical Marts
+    │
+    ▼
+Python Publisher
+    │
+    ▼
+Curated JSON
+    │
+    ▼
+Next.js
+```
 
-### Next.js Public Web Application
+The publisher exports curated datasets such as:
 
-A separate **Next.js + TypeScript** application provides the foundation for the public-facing data product.
+```text
+metadata.json
+skill-demand.json
+role-skill-demand.json
+company-tech-stack.json
+skill-trend.json
+role-capability-demand.json
+source-quality.json
+```
 
-The public web layer is intentionally isolated from the analytical SQL Server warehouse.
+This creates a clear boundary between:
 
-Curated analytical outputs are published into a dedicated serving format rather than exposing SQL Server directly.
+- analytical storage
+- analytical transformation
+- serving
+- presentation
+
+and avoids exposing the warehouse directly to the public web application.
 
 ---
 
-## Career Radar
+# Career Radar Web Application
 
-The long-term product layer is designed around a simple user flow:
+The public product layer is built using:
+
+```text
+Next.js
+TypeScript
+Tailwind CSS
+```
+
+The application currently exposes market intelligence generated by the production data pipeline.
+
+The serving architecture is designed so that newly published analytical data can be reflected without rebuilding the entire analytical platform.
+
+The product direction is:
+
+> **Understand the market. Understand your next move.**
+
+---
+
+# Internal Analytics
+
+A Streamlit-based analytical interface is also included in the repository for exploratory analysis and internal market inspection.
+
+It can be used for:
+
+- market KPIs
+- technology demand
+- role analysis
+- technology trends
+- company technology stacks
+- source-quality analysis
+
+The Next.js application is the primary direction for the public Career Radar product.
+
+---
+
+# Engineering Decisions
+
+## 1. Source-Specific Adapters
+
+Each external platform has its own collector.
+
+Downstream processing operates on a common staging contract.
+
+This reduces coupling between external APIs and the analytical warehouse.
+
+---
+
+## 2. Posting vs. Observation
+
+Repeated collection does not create duplicate canonical jobs.
+
+Instead:
+
+```text
+Canonical Job = identity
+Observation   = historical evidence
+```
+
+This is essential for meaningful trend analysis.
+
+---
+
+## 3. Configuration-Driven Taxonomies
+
+Role, seniority, technology, and capability definitions are maintained separately from core pipeline logic.
+
+This makes taxonomy behavior easier to:
+
+- profile
+- test
+- validate
+- version
+- extend
+
+---
+
+## 4. Market Evidence Before Recommendations
+
+Career Radar does not begin with hardcoded career recommendations.
+
+The system first builds evidence from:
+
+```text
+Role Demand
+Seniority Demand
+Technology Demand
+Capability Demand
+Company Breadth
+Source Breadth
+Historical Observations
+```
+
+Personalized recommendations will be built on top of this evidence layer.
+
+---
+
+## 5. Analytical Warehouse Is Not the Web Backend
+
+SQL Server is intentionally isolated from the public web application.
+
+Curated analytical results are published into a dedicated serving layer.
+
+This keeps the web application simple and reduces direct coupling to the warehouse.
+
+---
+
+## 6. Separate Market Evidence from Learning Evidence
+
+Future career recommendations will distinguish between:
+
+### Market Evidence
+
+What employers currently request.
+
+### Learning Evidence
+
+How a professional should learn those technologies and in what order.
+
+This prevents job-posting frequency from being incorrectly interpreted as a complete learning roadmap.
+
+---
+
+# Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| Source Collection | Python, Requests |
+| Text Processing | Python, Regex, BeautifulSoup |
+| Warehouse | Microsoft SQL Server |
+| Data Modeling | Dimensional Modeling |
+| Analytics Engineering | dbt |
+| Orchestration | Apache Airflow |
+| Airflow Metadata | PostgreSQL |
+| Infrastructure | Docker, Docker Compose |
+| Cloud Runtime | Ubuntu Linux VPS |
+| Reverse Proxy | Caddy |
+| Internal Analytics | Streamlit, Plotly |
+| Public Product | Next.js, TypeScript, Tailwind CSS |
+| Version Control | Git, GitHub |
+
+---
+
+# Repository Structure
+
+```text
+JobMarket-Intelligence/
+│
+├── airflow/
+│   └── dags/
+│       └── Airflow orchestration
+│
+├── config/
+│   └── Role, skill and capability taxonomies
+│
+├── dashboard/
+│   └── Streamlit analytical application
+│
+├── data/
+│   ├── raw/
+│   └── sample/
+│
+├── dbt/
+│   └── jobmarket/
+│       └── dbt models, marts and tests
+│
+├── docs/
+│   ├── architecture/
+│   └── data_model/
+│
+├── ingestion/
+│   ├── collectors/
+│   │   └── Source-specific collection adapters
+│   │
+│   ├── loaders/
+│   │   └── RAW, staging and DWH loaders
+│   │
+│   ├── parsers/
+│   │   └── Classification and intelligence extraction
+│   │
+│   └── publishers/
+│       └── Serving-layer publishers
+│
+├── sql/
+│   ├── staging/
+│   └── dwh/
+│
+├── tests/
+│
+├── web/
+│   └── Next.js Career Radar application
+│
+├── Dockerfile.airflow
+├── Dockerfile.web
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+# Environment & Secrets
+
+Runtime configuration is provided through environment variables.
+
+Sensitive values such as:
+
+```text
+API keys
+database passwords
+Airflow secrets
+```
+
+are stored outside version control.
+
+The repository includes environment configuration patterns without committing production credentials.
+
+The production `.env` file is excluded from Git.
+
+---
+
+# Production Security Model
+
+The cloud deployment follows a minimal public-exposure model.
+
+Public-facing services:
+
+```text
+HTTP / HTTPS
+SSH
+```
+
+Internal infrastructure such as:
+
+```text
+SQL Server
+Airflow Webserver
+PostgreSQL
+```
+
+is not intentionally exposed directly to the public internet.
+
+Administrative Airflow access can be reached through an SSH tunnel instead of opening the Airflow port publicly.
+
+---
+
+# Data Quality
+
+Data quality is enforced at multiple layers.
+
+## Source Layer
+
+Collectors validate source responses and preserve raw evidence.
+
+## Staging Layer
+
+Source-specific structures are normalized into a shared contract.
+
+## Warehouse Layer
+
+Canonical identity prevents repeated observations from becoming duplicate jobs.
+
+## Classification Layer
+
+Taxonomies are profiled against real market data before being frozen.
+
+## Analytics Layer
+
+dbt tests validate warehouse and mart assumptions.
+
+The overall philosophy is:
+
+> **Profile first. Freeze the taxonomy second. Automate third.**
+
+---
+
+# Current Production Lifecycle
+
+A normal production cycle looks like:
+
+```text
+External Sources
+       │
+       ▼
+Scheduled Airflow Run
+       │
+       ▼
+Collect New Observations
+       │
+       ▼
+Standardize
+       │
+       ▼
+Resolve Canonical Jobs
+       │
+       ▼
+Classify Roles
+       │
+       ▼
+Extract Technologies
+       │
+       ▼
+Extract Capabilities
+       │
+       ▼
+Update Warehouse
+       │
+       ▼
+Build dbt Marts
+       │
+       ▼
+Publish Web Data
+       │
+       ▼
+Career Radar Updated
+```
+
+No developer workstation is required for normal scheduled execution.
+
+---
+
+# Career Intelligence Model
+
+The analytical hierarchy is evolving toward:
+
+```text
+Raw Job Posting
+       │
+       ▼
+Is Tech Role?
+       │
+       ▼
+Career Area
+       │
+       ▼
+Role
+       │
+       ▼
+Seniority
+       │
+       ├──────────────► Technologies
+       │
+       ├──────────────► Capabilities
+       │
+       ├──────────────► Professional Skills
+       │
+       └──────────────► Responsibilities
+```
+
+The first five layers plus Technology and Capability Intelligence are already implemented.
+
+Professional Skills and richer responsibility intelligence belong to the next product phases.
+
+---
+
+# Career Recommendation Vision
+
+The future Career Radar experience is designed around a simple flow:
 
 ```text
 Select Career Area
@@ -509,13 +1224,15 @@ Select Seniority
 Select Technologies You Already Know
         │
         ▼
-    Career Radar
+     Career Radar
 ```
 
-The system will combine market evidence with the user's current profile to estimate:
+The system will compare a user's profile with observed market evidence.
+
+Potential outputs include:
 
 ```text
-Market Fit
+Market Fit Score
 Strong Areas
 Technology Gaps
 Capability Gaps
@@ -524,188 +1241,270 @@ Recommended Next Technologies
 Recommended Learning Path
 ```
 
-Recommendations are intended to be **evidence-based rather than hardcoded**.
-
-A future recommendation can be supported by signals such as:
-
-- demand within the target role
-- seniority relevance
-- number of companies requesting the technology
-- number of independent sources
-- technology co-occurrence
-- capability relevance
-- demand momentum
-- prerequisite relationships
-
-The product direction can be summarized as:
-
-> **Don't just search for your next job. Understand your next move.**
-
----
-
-## Technology Stack
-
-| Layer | Technologies |
-|---|---|
-| Ingestion | Python, Requests |
-| Text Processing | Python, BeautifulSoup, Regex |
-| Database | SQL Server |
-| Data Modeling | Dimensional Modeling |
-| Analytics Engineering | dbt |
-| Orchestration | Apache Airflow |
-| Airflow Metadata | PostgreSQL |
-| Infrastructure | Docker, Docker Compose |
-| Internal Analytics | Streamlit, Plotly |
-| Public Web | Next.js, TypeScript, Tailwind CSS |
-| Version Control | Git, GitHub |
-
----
-
-## Repository Structure
+A recommendation should eventually combine signals such as:
 
 ```text
-JobMarket-Intelligence/
-│
-├── airflow/
-│   └── dags/                 # Airflow orchestration
-│
-├── config/                   # Role, skill and capability taxonomies
-│
-├── dashboard/                # Streamlit analytics dashboard
-│
-├── data/
-│   ├── raw/                  # Local raw source data
-│   └── sample/
-│
-├── dbt/
-│   └── jobmarket/            # dbt project and analytical marts
-│
-├── docs/
-│   ├── architecture/
-│   └── data_model/
-│
-├── ingestion/
-│   ├── collectors/           # Source-specific collectors
-│   ├── loaders/              # RAW, STG and DWH loaders
-│   ├── parsers/              # Classification and text processing
-│   └── publishers/           # Serving-layer publishers
-│
-├── sql/
-│   ├── staging/
-│   └── dwh/
-│
-├── tests/
-│
-├── web/                      # Next.js public application
-│
-├── Dockerfile.airflow
-├── docker-compose.yml
-└── README.md
+Role Demand
+×
+Seniority Relevance
+×
+Skill Gap
+×
+Market Breadth
+×
+Learning Prerequisite Fit
 ```
 
----
+Future versions can also incorporate:
 
-## Engineering Decisions
+```text
+Demand Momentum
+Company Breadth
+Independent Source Breadth
+Technology Co-occurrence
+Capability Relevance
+```
 
-### Source-Specific Adapters
+The recommendation layer is intentionally **not yet treated as a completed production feature**.
 
-Each external source has its own ingestion adapter while downstream processing operates on a standardized contract.
-
-This reduces coupling between external APIs and the analytical model.
-
-### Configuration-Driven Taxonomies
-
-Role, seniority, technology, and capability definitions are maintained outside the core processing logic.
-
-This makes classification behavior easier to profile, validate, and extend.
-
-### Precision Before Coverage
-
-Classification and capability extraction prioritize reliable evidence over artificially maximizing coverage.
-
-Ambiguous evidence is profiled and validated before being promoted into production rules.
-
-### Historical Observation Model
-
-Job identity and job observation are modeled separately, allowing repeated collection without inflating unique vacancy counts.
-
-### Appropriate Technology Over Artificial Complexity
-
-The current workload does not require distributed processing technologies such as Spark or Kafka.
-
-Rather than introducing technologies solely to increase stack complexity, infrastructure is selected according to the actual scale and requirements of the project.
-
-### Public Serving Isolation
-
-The SQL Server analytical warehouse is not intended to be exposed directly to the public application.
-
-Curated outputs are published into a separate serving layer for the website.
+The current system is building the market evidence required to support it.
 
 ---
 
-## Roadmap
+# Product Evolution
 
-### Data Platform
+Career Radar is intended to evolve from market analytics into a persistent career intelligence product.
 
-- [x] Multi-source job ingestion
-- [x] Standardized staging layer
-- [x] SQL Server dimensional warehouse
-- [x] Incremental DWH loading
-- [x] Job observation history
-- [x] Apache Airflow orchestration
-- [x] dbt analytical models
-- [x] Data-quality tests
+A future user journey may look like:
 
-### Career Intelligence
+```text
+Career Radar
+     │
+     ▼
+My Career Profile
+     │
+     ▼
+Market Fit Score
+     │
+     ▼
+Skill Gaps
+     │
+     ▼
+Learning Plan
+     │
+     ▼
+Market Changes
+     │
+     ▼
+Progress
+     │
+     └──────────────► Updated Market Fit
+```
+
+Potential future product features include:
+
+- My Career Radar
+- Since Your Last Visit
+- What Should I Learn Next?
+- Career Watchlist
+- Career Trajectory
+- Weekly Career Brief
+- Market Strengths
+- Skill Gap Tracking
+- Learning Progress
+
+---
+
+# Roadmap
+
+## Phase 1 — Multi-Source Market Foundation
+
+- [x] Jooble ingestion
+- [x] Lever ingestion
+- [x] Akbank ingestion
+- [x] Greenhouse ingestion
+- [x] Workday ingestion
+- [x] SmartRecruiters ingestion
+- [x] Standardized staging contract
+- [x] Canonical job model
+- [x] Historical observation model
+
+## Phase 2 — Career Classification
 
 - [x] Tech / Non-Tech classification
 - [x] Career Area taxonomy
-- [x] Role normalization
+- [x] Normalized Role taxonomy
 - [x] Seniority classification
-- [x] Technology Taxonomy V2
+- [x] Warehouse integration
+
+## Phase 3 — Technology Intelligence
+
+- [x] Technology taxonomy
+- [x] Job ↔ Technology relationships
 - [x] Technology demand marts
-- [x] Role and seniority demand mart
-- [ ] Capability Taxonomy V1 production model
-- [ ] Professional Skills taxonomy
-- [ ] Role capability demand mart
-- [ ] Career recommendation marts
-- [ ] Learning evidence model
+- [x] Role-specific demand
+- [x] Company technology stacks
+- [x] Historical technology trends
 
-### Product
+## Phase 4 — Capability Intelligence
 
-- [x] Streamlit analytics dashboard
-- [x] Next.js public web foundation
-- [x] DWH-to-web publishing pipeline
-- [ ] Dynamic Career Area explorer
-- [ ] Role and technology explorer
-- [ ] Career Radar
-- [ ] Skill-gap recommendation engine
-- [ ] Learning-path recommendations
-- [ ] Public cloud deployment
+- [x] Capability taxonomy
+- [x] Context-aware capability extraction
+- [x] `DimCapability`
+- [x] `BridgeJobPostingCapability`
+- [x] Role-capability demand mart
+- [x] Airflow integration
+- [x] Web publishing integration
+
+## Phase 5 — Cloud Production
+
+- [x] Cloud VPS
+- [x] Dockerized SQL Server
+- [x] Dockerized Airflow
+- [x] PostgreSQL Airflow metadata
+- [x] Cloud dbt execution
+- [x] Automated web publisher
+- [x] Dockerized Next.js
+- [x] Caddy reverse proxy
+- [x] Scheduled autonomous pipelines
+- [x] Cloud Daily pipeline acceptance
+- [x] Cloud Jooble pipeline acceptance
+- [ ] Production executor hardening
+- [ ] Reboot / recovery validation
+- [ ] Domain and automatic HTTPS
+- [ ] Stronger collector failure semantics
+
+## Phase 6 — Professional Skill Intelligence
+
+- [ ] Professional Skill taxonomy
+- [ ] Communication / collaboration signals
+- [ ] Problem-solving signals
+- [ ] Ownership / leadership signals
+- [ ] Role-specific professional skill demand
+- [ ] `mart_role_professional_skill_demand`
+
+## Phase 7 — Recommendation Engine
+
+- [ ] Role profile model
+- [ ] Skill-gap model
+- [ ] Capability-gap model
+- [ ] Market breadth scoring
+- [ ] Demand momentum
+- [ ] Recommendation scoring
+- [ ] `mart_role_profile`
+- [ ] `mart_career_recommendation`
+
+## Phase 8 — Learning Evidence
+
+- [ ] Learning source model
+- [ ] Technology prerequisite graph
+- [ ] Official documentation evidence
+- [ ] Learning-path evidence
+- [ ] `DimLearningSource`
+- [ ] `FactLearningEvidence`
+- [ ] `BridgeSkillPrerequisite`
+
+## Phase 9 — Personalized Career Radar
+
+- [ ] User profiles
+- [ ] User skills
+- [ ] Target roles
+- [ ] Market Fit Score
+- [ ] Personalized skill gaps
+- [ ] Learning progress
+- [ ] Career Watchlist
+- [ ] Weekly Career Brief
+- [ ] Market-change notifications
 
 ---
 
-## Project Goal
+# Current Limitations
 
-The goal of **JobMarket Intelligence** is not simply to collect job postings.
+Career Radar is an evolving engineering and analytics product.
 
-It demonstrates how a modern data engineering workflow can transform fragmented and semi-structured labor-market data into a reusable **career intelligence product**.
+Current limitations include:
 
-The platform is evolving toward four layers of market understanding:
+- the dataset is not intended to represent the entire Turkish technology labor market
+- source coverage differs across ATS platforms and companies
+- job descriptions can contain ambiguous or incomplete technology signals
+- taxonomy-based classification requires continuous profiling as the market changes
+- capability extraction is rule/context driven rather than a complete semantic understanding system
+- historical coverage begins from the project's collection period rather than representing long-term labor-market history
+- personalized recommendation and learning layers are not yet production features
+- the current cloud architecture intentionally favors simplicity over distributed infrastructure
+
+These constraints are treated as explicit engineering trade-offs rather than hidden assumptions.
+
+---
+
+# Design Philosophy
+
+Career Radar is intentionally built incrementally.
+
+The project does not start by building a recommendation engine and then searching for evidence to support it.
+
+Instead:
 
 ```text
-What role is this?
-        │
-        ▼
-What technologies does it require?
-        │
-        ▼
-What must someone actually be capable of doing?
-        │
-        ▼
-What should they learn next?
+Collect
+   ↓
+Standardize
+   ↓
+Model
+   ↓
+Classify
+   ↓
+Measure
+   ↓
+Validate
+   ↓
+Build Market Evidence
+   ↓
+Recommend
 ```
 
-Ultimately, the project aims to turn job-market data into transparent, evidence-based intelligence about:
+The objective is to make future career recommendations traceable back to real market observations.
 
-**career areas, role demand, technology demand, capabilities, market trends, skill gaps, and career development.**
+---
+
+# Long-Term Direction
+
+Career Radar aims to connect three layers:
+
+```text
+MARKET
+What are employers asking for?
+
+        +
+
+PROFILE
+What does the professional already know?
+
+        +
+
+LEARNING
+What is the highest-value next step?
+
+        │
+        ▼
+
+CAREER INTELLIGENCE
+```
+
+The result should not simply be another job board.
+
+The goal is a system that helps technology professionals understand:
+
+> **Where am I now?**
+
+> **Where does the market place me?**
+
+> **What is changing?**
+
+> **What should I learn next?**
+
+---
+
+## Project Principle
+
+> **Don't just search for your next job. Understand your next move.**
