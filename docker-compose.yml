@@ -173,6 +173,16 @@ services:
       MSSQL_DRIVER: ODBC Driver 17 for SQL Server
 
       JOOBLE_API_KEY: ${JOOBLE_API_KEY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_MAIL_FROM: ${SMTP_MAIL_FROM}
+      SMTP_MAIL_TO: ${SMTP_MAIL_TO}
+      CAREER_RADAR_URL: https://techcareerradar.com
+      PYTHONPATH: /opt/airflow/jobmarket
+
+
 
     volumes:
       - ./:/opt/airflow/jobmarket

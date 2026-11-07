@@ -3,6 +3,10 @@ from datetime import timedelta
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 import pendulum
+from ingestion.notifications.email_notifier import (
+    notify_dag_failure,
+    notify_dag_success,
+)
 
 
 # ============================================================
@@ -42,6 +46,8 @@ with DAG(
     ),
     schedule="0 9 * * 2,5",
     catchup=False,
+    on_success_callback=notify_dag_success,
+    on_failure_callback=notify_dag_failure,
     tags=[
         "jobmarket",
         "jooble",
