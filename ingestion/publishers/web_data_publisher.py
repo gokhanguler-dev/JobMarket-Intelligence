@@ -3,6 +3,7 @@ import os
 from datetime import date, datetime, time, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
+from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 import pyodbc
@@ -81,14 +82,19 @@ def write_json(file_name, data):
 
     output_path = OUTPUT_DIR / file_name
 
-    with output_path.open("w", encoding="utf-8") as file:
-        json.dump(
-            data,
-            file,
-            ensure_ascii=False,
-            indent=2,
-            default=json_serializer,
-        )
+    temporary_path = output_path.with_suffix(f".{uuid4().hex}.tmp")
+    try:
+        with temporary_path.open("w", encoding="utf-8") as file:
+            json.dump(
+                data,
+                file,
+                ensure_ascii=False,
+                indent=2,
+                default=json_serializer,
+            )
+        temporary_path.replace(output_path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
 
     print(f"[OK] {file_name:<30} {len(data):>6} rows")
 
@@ -303,6 +309,32 @@ def publish_company_tech_stack(cursor):
 
 
 # ---------------------------------------------------------
+# PUBLISH TECHNOLOGY STACK PAIRS
+# ---------------------------------------------------------
+
+def publish_technology_stack_pairs(cursor):
+    query = """
+    SELECT
+        SkillKey1,
+        SkillKey2,
+        Skill1,
+        Skill2,
+        BothJobs,
+        SupportPct,
+        Confidence1To2Pct,
+        Confidence2To1Pct,
+        Lift
+    FROM marts.mart_technology_stack_pairs
+    ORDER BY BothJobs DESC, SkillKey1, SkillKey2;
+    """
+
+    write_json(
+        "technology-stack-pairs.json",
+        query_to_dicts(cursor, query),
+    )
+
+
+# ---------------------------------------------------------
 # PUBLISH TECHNOLOGY TREND
 # ---------------------------------------------------------
 
@@ -400,6 +432,7 @@ def main():
         publish_role_skill_demand(cursor)
 
         publish_company_tech_stack(cursor)
+        publish_technology_stack_pairs(cursor)
 
         publish_skill_trend(cursor)
 

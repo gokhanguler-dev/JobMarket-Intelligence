@@ -30,6 +30,18 @@ type SkillDemand = {
   DemandPercentage: number;
 };
 
+type TechnologyStackPair = {
+  SkillKey1: number;
+  SkillKey2: number;
+  Skill1: string;
+  Skill2: string;
+  BothJobs: number;
+  SupportPct: number;
+  Confidence1To2Pct: number;
+  Confidence2To1Pct: number;
+  Lift: number;
+};
+
 type CapabilityDemand = {
   CareerAreaName: string;
   RoleName: string;
@@ -53,6 +65,7 @@ async function getMarketData() {
     metadataRaw,
     skillDemandRaw,
     capabilityDemandRaw,
+    technologyStackPairsRaw,
   ] = await Promise.all([
     fs.readFile(
       path.join(dataDirectory, "metadata.json"),
@@ -68,11 +81,24 @@ async function getMarketData() {
       path.join(dataDirectory, "role-capability-demand.json"),
       "utf-8"
     ),
+
+    fs.readFile(
+      path.join(dataDirectory, "technology-stack-pairs.json"),
+      "utf-8",
+    ).catch((error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") {
+        return "[]";
+      }
+      throw error;
+    }),
   ]);
 
   return {
     metadata: JSON.parse(metadataRaw) as Metadata,
     skills: JSON.parse(skillDemandRaw) as SkillDemand[],
+    technologyStackPairs: JSON.parse(
+      technologyStackPairsRaw
+    ) as TechnologyStackPair[],
     capabilities: JSON.parse(
       capabilityDemandRaw
     ) as CapabilityDemand[],
@@ -125,7 +151,9 @@ export default async function Home() {
     metadata,
     skills,
     capabilities,
+    technologyStackPairs,
   } = await getMarketData();
+  const topTechnologyStackPairs = technologyStackPairs.slice(0, 10);
 
   // -------------------------------------------------------
   // TECHNOLOGY DEMAND
@@ -198,6 +226,10 @@ export default async function Home() {
           <div className="nav-links">
             <a href="#market">
               Technologies
+            </a>
+
+            <a href="#technology-pairs">
+              Tech Pairs
             </a>
 
             <a href="#capabilities">
@@ -552,6 +584,66 @@ export default async function Home() {
         </div>
       </section>
 
+      <section id="technology-pairs" className="section">
+        <div className="shell">
+          <div className="section-heading">
+            <div>
+              <span className="section-label">TECHNOLOGY STACK INTELLIGENCE</span>
+              <h2 id="technology-pairs-heading">Technologies requested together</h2>
+            </div>
+            <p>
+              The 10 pairs that appear together most often in unique job postings.
+              Support is the share of all postings containing both technologies.
+              Confidence A → B is the share of postings mentioning A that
+              also mention B. Confidence B → A reverses the comparison.
+              Lift compares the observed frequency with what we would expect
+              if the two technologies appeared independently.
+            </p>
+          </div>
+
+          {topTechnologyStackPairs.length > 0 ? (
+            <div
+              className="panel technology-pairs-panel"
+              role="region"
+              aria-labelledby="technology-pairs-heading"
+              tabIndex={0}
+            >
+              <table
+                className="technology-pairs-table"
+                aria-labelledby="technology-pairs-heading"
+              >
+                <thead>
+                  <tr>
+                    <th scope="col">Technology A</th>
+                    <th scope="col">Technology B</th>
+                    <th scope="col">Shared postings</th>
+                    <th scope="col">Support</th>
+                    <th scope="col">Confidence A → B</th>
+                    <th scope="col">Confidence B → A</th>
+                    <th scope="col">Lift</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {topTechnologyStackPairs.map((pair) => (
+                    <tr key={`${pair.SkillKey1}-${pair.SkillKey2}`}>
+                      <td>{pair.Skill1}</td>
+                      <td>{pair.Skill2}</td>
+                      <td>{pair.BothJobs}</td>
+                      <td>{pair.SupportPct.toFixed(2)}%</td>
+                      <td>{pair.Confidence1To2Pct.toFixed(2)}%</td>
+                      <td>{pair.Confidence2To1Pct.toFixed(2)}%</td>
+                      <td>{pair.Lift.toFixed(2)}×</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p>No technology pair data is available yet.</p>
+          )}
+        </div>
+      </section>
+
       {/* ===================================================
           CAPABILITY INTELLIGENCE
       =================================================== */}
@@ -784,7 +876,7 @@ export default async function Home() {
               </span>
 
               <h2>
-                Don't just search for your next job.
+                Don&apos;t just search for your next job.
                 <br />
                 Understand your next move.
               </h2>

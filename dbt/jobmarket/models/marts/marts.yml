@@ -245,3 +245,62 @@ models:
       - name: LastObservedAt
         tests:
           - not_null
+
+  # ============================================================
+  # MART: TECHNOLOGY STACK PAIRS
+  # ============================================================
+
+  - name: mart_technology_stack_pairs
+    description: >
+      Technology co-occurrence across canonical job postings.
+      Calculates support, directional confidence and lift for each
+      unique technology pair.
+
+    columns:
+      - name: SkillKey1
+        tests:
+          - not_null
+
+      - name: SkillKey2
+        tests:
+          - not_null
+
+      - name: Skill1
+        tests:
+          - not_null
+
+      - name: Skill2
+        tests:
+          - not_null
+
+      - name: BothJobs
+        tests:
+          - not_null
+
+      - name: Skill1Jobs
+        tests:
+          - not_null
+
+      - name: Skill2Jobs
+        tests:
+          - not_null
+
+      - name: TotalJobs
+        tests:
+          - not_null
+
+      - name: SupportPct
+        tests:
+          - not_null
+
+      - name: Confidence1To2Pct
+        tests:
+          - not_null
+
+      - name: Confidence2To1Pct
+        tests:
+          - not_null
+
+      - name: Lift
+        tests:
+          - not_null
