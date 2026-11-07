@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-type Signal = { name: string; jobs: number };
+type Signal = { name: string; jobs: number; companies?: number };
 type Group = "technologies" | "capabilities";
 type Cohort = "active" | "new";
 
@@ -14,10 +14,28 @@ export type Demand = {
   capabilities: Signal[];
 };
 
+type MarketScope = "turkiye" | "remote_from_turkiye" | "aggregator_location_only" | "outside_turkiye" | "unknown";
+
+type RoleAudit = {
+  source_records: number;
+  source_mix: Record<string, number>;
+  distinct_postings: number;
+  url_duplicates: number;
+  excerpt_duplicates: number;
+  possible_duplicate_records: number;
+  locations: Record<MarketScope, number>;
+};
+
+type RoleProfile = Demand & {
+  role: string;
+  eligible?: Demand & { with_capability: number; with_strong_evidence: number };
+  audit?: RoleAudit;
+};
+
 export type CareerIntelligence = {
   profile_start: string;
   profile_end: string;
-  roles: (Demand & { role: string })[];
+  roles: RoleProfile[];
   weeks: {
     start: string;
     first_day: string;
@@ -47,7 +65,12 @@ function SignalList({ label, signals }: { label: string; signals: Signal[] }) {
           {signals.map((signal) => (
             <li key={signal.name}>
               <span>{signal.name}</span>
-              <strong>{signal.jobs}</strong>
+              <strong>
+                {signal.jobs}
+                {signal.companies !== undefined && (
+                  <small>{signal.companies} {signal.companies === 1 ? "employer" : "employers"}</small>
+                )}
+              </strong>
             </li>
           ))}
         </ul>
@@ -58,7 +81,77 @@ function SignalList({ label, signals }: { label: string; signals: Signal[] }) {
   );
 }
 
+function SampleAudit({ audit }: { audit: RoleAudit }) {
+  const entries = [
+    ["Source records", audit.source_records],
+    ["Distinct postings after matching", audit.distinct_postings],
+    ["Same posting URL", audit.url_duplicates],
+    ["Matched syndication excerpts", audit.excerpt_duplicates],
+    ["Possible duplicates still counted", audit.possible_duplicate_records],
+    ["Türkiye location", audit.locations.turkiye],
+    ["Remote from Türkiye", audit.locations.remote_from_turkiye],
+    ["Aggregator country label only", audit.locations.aggregator_location_only],
+    ["Outside Türkiye", audit.locations.outside_turkiye],
+    ["Location unclear", audit.locations.unknown],
+  ] as const;
+
+  return (
+    <details className="role-sample-audit">
+      <summary>How this sample was checked</summary>
+      <p>Source mix · {Object.entries(audit.source_mix).map(([source, count]) => `${source} ${count}`).join(" · ")}</p>
+      <dl>
+        {entries.map(([label, count]) => (
+          <div key={label}><dt>{label}</dt><dd>{count}</dd></div>
+        ))}
+      </dl>
+      <p>
+        A syndication match requires the same title, compatible location and at
+        least two matching excerpts in one direct posting. Possible duplicates
+        stay in the sample. An aggregator country label alone stays outside the
+        Türkiye sample until there is supporting location evidence.
+      </p>
+    </details>
+  );
+}
+
+function RoleCard({ role, useEligible }: { role: RoleProfile; useEligible: boolean }) {
+  const eligible = useEligible ? role.eligible : undefined;
+  const sample = eligible ?? role;
+  return (
+    <article className="panel evidence-panel">
+      <h3>{role.role}</h3>
+      <p>{sample.jobs} postings · {sample.companies} employers · {sample.sources.length} sources</p>
+      {eligible && (
+        <p className="role-sample-coverage">
+          {eligible.with_capability} with capability evidence · {eligible.with_strong_evidence} with a strong match
+          {eligible.jobs > 0 && eligible.jobs < 10 && <small>Small sample</small>}
+        </p>
+      )}
+      {sample.jobs > 0 ? (
+        <div className="role-evidence-signals">
+          <SignalList label="Technologies" signals={sample.technologies.slice(0, 8)} />
+          <SignalList label="Capabilities" signals={sample.capabilities.slice(0, 8)} />
+        </div>
+      ) : (
+        <p>No postings in this sample.</p>
+      )}
+      {(sample.technologies.length > 8 || sample.capabilities.length > 8) && (
+        <details>
+          <summary>All detected signals</summary>
+          <div className="role-evidence-signals">
+            <SignalList label="Technologies" signals={sample.technologies} />
+            <SignalList label="Capabilities" signals={sample.capabilities} />
+          </div>
+        </details>
+      )}
+      {role.audit && <SampleAudit audit={role.audit} />}
+    </article>
+  );
+}
+
 export function RoleProfiles({ data }: { data: CareerIntelligence }) {
+  const [sample, setSample] = useState("eligible");
+  const audited = data.roles.some((role) => role.audit);
   return (
     <section id="role-profiles" className="section" aria-labelledby="role-profiles-heading">
       <div className="shell">
@@ -69,35 +162,24 @@ export function RoleProfiles({ data }: { data: CareerIntelligence }) {
           </div>
           <p>
             {dayLabel(data.profile_start)} to {dayLabel(data.profile_end)} · Latest
-            observation per posting in the last 30 days. Each count shows how many
-            postings contained that signal.
+            observation per posting in the last 30 days. Signal counts show how
+            many postings and identified employers provided evidence.
           </p>
         </div>
+        {audited && (
+          <div className="trend-controls role-sample-controls">
+            <label>
+              Role sample
+              <select aria-label="Role sample" value={sample} onChange={(event) => setSample(event.target.value)}>
+                <option value="eligible">Türkiye location evidence</option>
+                <option value="all">All source records</option>
+              </select>
+            </label>
+          </div>
+        )}
         <div className="role-evidence-grid">
           {data.roles.map((role) => (
-            <article key={role.role} className="panel evidence-panel">
-              <h3>{role.role}</h3>
-              <p>
-                {role.jobs} postings · {role.companies} employers · {role.sources.length} sources
-              </p>
-              {role.jobs > 0 ? (
-                <div className="role-evidence-signals">
-                  <SignalList label="Technologies" signals={role.technologies.slice(0, 8)} />
-                  <SignalList label="Capabilities" signals={role.capabilities.slice(0, 8)} />
-                </div>
-              ) : (
-                <p>No recent observations for this role.</p>
-              )}
-              {(role.technologies.length > 8 || role.capabilities.length > 8) && (
-                <details>
-                  <summary>All detected signals</summary>
-                  <div className="role-evidence-signals">
-                    <SignalList label="Technologies" signals={role.technologies} />
-                    <SignalList label="Capabilities" signals={role.capabilities} />
-                  </div>
-                </details>
-              )}
-            </article>
+            <RoleCard key={role.role} role={role} useEligible={sample === "eligible"} />
           ))}
         </div>
       </div>

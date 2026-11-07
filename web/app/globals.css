@@ -782,6 +782,45 @@ select {
   cursor: pointer;
 }
 
+.role-sample-controls {
+  margin-bottom: 18px;
+}
+
+.evidence-signals li strong {
+  text-align: right;
+}
+
+.evidence-signals li small {
+  display: block;
+  color: var(--muted-light);
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.role-sample-coverage small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.role-sample-audit dl {
+  margin: 0;
+  font-size: 14px;
+}
+
+.role-sample-audit dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.role-sample-audit dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
 .trend-controls {
   display: flex;
   flex-wrap: wrap;

@@ -843,7 +843,13 @@ The application exposes technology demand, capability demand, technology pairs, 
 
 ## Role Profiles
 
-The Data Engineer and AI Engineer cards summarize the latest stored observation for each posting seen in the last 30 days. They show distinct posting, employer, and source counts alongside the technologies mentioned and capabilities detected for each role. The November 7 snapshot contains 34 Data Engineer and 32 AI Engineer postings. [Live role profiles](https://techcareerradar.com/#role-profiles)
+The Data Engineer and AI Engineer cards use the latest stored observation for each posting seen in the last 30 days. By default, the cards show postings with evidence of a Türkiye location or remote work from Türkiye. The sample selector also exposes all source records for comparison. Technology and capability counts include the number of identified employers. [Live role profiles](https://techcareerradar.com/#role-profiles)
+
+### Role sample audit
+
+The audit distinguishes a Türkiye location, remote work from Türkiye, a country label supplied only by an aggregator, a location outside Türkiye, and unclear location evidence. The Türkiye sample uses the first two categories. Explicit relocation to a recognized foreign destination can override a source label.
+
+The audit groups records with the same posting title and URL after removing known tracking parameters. It also groups an aggregator listing with a single direct posting when the title and location are compatible and at least two substantive excerpts match. When employer identity is unavailable, a specific title is also required. Possible duplicates stay in the sample and appear in the audit counts. The role cards report the source mix and how many eligible postings contain capability evidence or a strong contextual match. The weekly market trend keeps its source-level counting rules. [Role audit implementation](ingestion/publishers/role_posting_audit.py)
 
 ## Weekly Market Trends
 

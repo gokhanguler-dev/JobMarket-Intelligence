@@ -1,10 +1,11 @@
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import timedelta
 from functools import lru_cache
 
 from ingestion.parsers.capability_extractor import extract_capabilities
 from ingestion.parsers.job_text_parser import clean_html_text
 from ingestion.parsers.skill_extractor import extract_skills, load_skill_taxonomy
+from ingestion.publishers.role_posting_audit import ELIGIBLE_SCOPES, audit_role_postings
 
 
 PROFILE_ROLES = ("Data Engineer", "AI Engineer")
@@ -51,7 +52,8 @@ ranked AS (
 SELECT r.JobPostingKey, r.CompanyKey, r.SourceSystem, r.RoleName, r.CareerAreaName,
        r.LocalDay, r.WeekStart, w.FirstDay, w.LastDay, w.ObservedDays,
        r.WeeklyRank, r.FirstRank, r.LatestRank,
-       raw.JobTitle, COALESCE(NULLIF(raw.Description, ''), raw.Snippet) AS Description
+       raw.JobTitle, raw.JobLocation, raw.WorkModel, raw.JobLink,
+       COALESCE(NULLIF(raw.Description, ''), raw.Snippet) AS Description
 FROM ranked r
 JOIN coverage w ON w.WeekStart = r.WeekStart
 LEFT JOIN stg.JobPostingRaw raw ON raw.RawJobPostingID = r.RawJobPostingID
@@ -61,11 +63,12 @@ ORDER BY r.JobPostingKey, r.ObservedAt, r.JobObservationKey;
 
 
 class Demand:
-    def __init__(self):
+    def __init__(self, track_signal_companies=False):
         self.jobs = 0
         self.companies = set()
         self.sources = set()
         self.signals = {group: Counter() for group in SIGNAL_GROUPS}
+        self.signal_companies = defaultdict(set) if track_signal_companies else None
 
     def add(self, row, signals):
         self.jobs += 1
@@ -74,6 +77,9 @@ class Demand:
         self.sources.add(row["SourceSystem"])
         for group, names in zip(SIGNAL_GROUPS, signals):
             self.signals[group].update(names)
+            if self.signal_companies is not None and row["CompanyKey"] is not None:
+                for name in names:
+                    self.signal_companies[group, name].add(row["CompanyKey"])
 
     def summarize(self):
         return {
@@ -82,12 +88,52 @@ class Demand:
             "sources": sorted(self.sources),
             **{
                 group: [
-                    {"name": name, "jobs": count}
+                    self.summarize_signal(group, name, count)
                     for name, count in sorted(counter.items(), key=lambda item: (-item[1], item[0]))
                 ]
                 for group, counter in self.signals.items()
             },
         }
+
+
+    def summarize_signal(self, group, name, count):
+        result = {"name": name, "jobs": count}
+        if self.signal_companies is not None:
+            result["companies"] = len(self.signal_companies[group, name])
+        return result
+
+
+def summarize_role(role, records):
+    all_records = Demand(track_signal_companies=True)
+    rows = []
+    evidence = {}
+    for row, signals, strong_evidence in records:
+        all_records.add(row, signals)
+        rows.append(row)
+        evidence[row["JobPostingKey"]] = (signals, strong_evidence)
+
+    retained, audit = audit_role_postings(rows)
+    eligible = Demand(track_signal_companies=True)
+    with_capability = 0
+    with_strong_evidence = 0
+    for posting in retained:
+        if posting.scope not in ELIGIBLE_SCOPES:
+            continue
+        signals, strong_evidence = evidence[posting.row["JobPostingKey"]]
+        eligible.add(posting.row, signals)
+        with_capability += bool(signals[1])
+        with_strong_evidence += strong_evidence
+
+    return {
+        "role": role,
+        **all_records.summarize(),
+        "eligible": {
+            **eligible.summarize(),
+            "with_capability": with_capability,
+            "with_strong_evidence": with_strong_evidence,
+        },
+        "audit": audit,
+    }
 
 
 def build_career_intelligence(rows, today):
@@ -97,18 +143,18 @@ def build_career_intelligence(rows, today):
     def extract(title, description, area, role):
         text = clean_html_text(description) or ""
         technologies = frozenset(extract_skills(f"{title or ''} {text}", skill_taxonomy))
-        capabilities = frozenset(
-            match["capability"] for match in extract_capabilities(description, area, role)
-        )
-        return technologies, capabilities
+        matches = extract_capabilities(description, area, role)
+        capabilities = frozenset(match["capability"] for match in matches)
+        strong_evidence = any(match["evidence_type"] == "Strong" for match in matches)
+        return (technologies, capabilities), strong_evidence
 
     window_start = today - timedelta(days=29)
-    profiles = {role: Demand() for role in PROFILE_ROLES}
+    profiles = {role: [] for role in PROFILE_ROLES}
     weeks = {}
 
     for row in rows:
         role = row["RoleName"]
-        signals = extract(
+        signals, strong_evidence = extract(
             row["JobTitle"], row["Description"], row["CareerAreaName"], role
         )
         week_start = row["WeekStart"]
@@ -127,14 +173,12 @@ def build_career_intelligence(rows, today):
         if row["FirstRank"] == 1:
             week["new"].add(row, signals)
         if row["LatestRank"] == 1 and role in profiles and window_start <= row["LocalDay"] <= today:
-            profiles[role].add(row, signals)
+            profiles[role].append((row, signals, strong_evidence))
 
     return {
         "profile_start": window_start,
         "profile_end": today,
-        "roles": [
-            {"role": role, **demand.summarize()} for role, demand in profiles.items()
-        ],
+        "roles": [summarize_role(role, records) for role, records in profiles.items()],
         "weeks": [
             {**week, "active": week["active"].summarize(), "new": week["new"].summarize()}
             for _, week in sorted(weeks.items())

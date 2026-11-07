@@ -12,6 +12,9 @@ class TestCareerIntelligence(unittest.TestCase):
             "CareerAreaName": "AI & Machine Learning",
             "CompanyKey": 4,
             "SourceSystem": "Workable",
+            "JobLocation": "Istanbul",
+            "WorkModel": None,
+            "JobLink": None,
             "JobTitle": title,
             "Description": description,
             "LocalDay": day,
@@ -47,7 +50,36 @@ class TestCareerIntelligence(unittest.TestCase):
         self.assertEqual(following["active"]["jobs"], 1)
         role = next(profile for profile in result["roles"] if profile["role"] == "AI Engineer")
         self.assertEqual(role["jobs"], 1)
-        self.assertIn({"name": "RAG & Retrieval Engineering", "jobs": 1}, role["capabilities"])
+        self.assertIn(
+            {"name": "RAG & Retrieval Engineering", "jobs": 1, "companies": 1},
+            role["eligible"]["capabilities"],
+        )
+        self.assertEqual(role["eligible"]["with_strong_evidence"], 1)
+        self.assertEqual(role["audit"]["distinct_postings"], 1)
+        self.assertEqual(role["audit"]["locations"]["turkiye"], 1)
+
+    def test_role_audit_prefers_direct_evidence_without_changing_weekly_counts(self):
+        week = date(2026, 10, 19)
+        direct = self.observation(week=week, day=week, first=1, latest=1, weekly=1,
+                                  title="AI Engineer", description="Python.")
+        direct["JobLink"] = "https://example.com/jobs/12345"
+        syndicated = {
+            **direct,
+            "JobPostingKey": 2,
+            "JobLink": "https://example.com/jobs/12345?utm_source=jooble",
+            "SourceSystem": "Jooble",
+            "Description": "Build RAG systems with SQL.",
+        }
+        result = build_career_intelligence([direct, syndicated], date(2026, 10, 25))
+        role = next(profile for profile in result["roles"] if profile["role"] == "AI Engineer")
+        self.assertEqual(result["weeks"][0]["active"]["jobs"], 2)
+        self.assertEqual(role["jobs"], 2)
+        self.assertEqual(role["audit"]["url_duplicates"], 1)
+        self.assertEqual(role["eligible"]["jobs"], 1)
+        self.assertEqual(role["eligible"]["with_capability"], 0)
+        self.assertEqual(
+            role["eligible"]["technologies"], [{"name": "Python", "jobs": 1, "companies": 1}]
+        )
 
     def test_older_observations_stay_in_trends_and_leave_the_recent_profile(self):
         week = date(2026, 10, 19)
