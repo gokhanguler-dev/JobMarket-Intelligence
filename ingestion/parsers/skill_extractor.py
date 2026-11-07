@@ -1,5 +1,6 @@
 import json
 import re
+from functools import lru_cache
 from pathlib import Path
 
 
@@ -23,25 +24,22 @@ def load_skill_taxonomy():
         return json.load(file)
 
 
+@lru_cache(maxsize=2048)
+def alias_pattern(alias):
+    return re.compile(r"(?<!\w)" + re.escape(alias.lower()) + r"(?!\w)")
+
+
 def contains_alias(text, alias):
-
-    pattern = (
-        r"(?<!\w)"
-        + re.escape(alias.lower())
-        + r"(?!\w)"
-    )
-
-    return bool(
-        re.search(pattern, text.lower())
-    )
+    return bool(alias_pattern(alias).search(text.lower()))
 
 
-def extract_skills(text):
+def extract_skills(text, taxonomy=None):
 
     if not text:
         return []
 
-    taxonomy = load_skill_taxonomy()
+    if taxonomy is None:
+        taxonomy = load_skill_taxonomy()
 
     detected_skills = []
 

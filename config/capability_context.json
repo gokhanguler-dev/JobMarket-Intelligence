@@ -1,5 +1,5 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "capabilities": {
     "Data Pipeline Engineering": {
       "context_scope": "role_sensitive",
@@ -375,6 +375,56 @@
         "DevOps Engineer",
         "Cloud Engineer",
         "Network Engineer"
+      ]
+    },
+
+    "RAG & Retrieval Engineering": {
+      "context_scope": "role_sensitive",
+      "career_areas": [
+        "AI & Machine Learning"
+      ],
+      "roles": [
+        "AI Engineer",
+        "AI Architect",
+        "Machine Learning Engineer",
+        "Data Scientist",
+        "Data Engineer",
+        "Software Engineer",
+        "Backend Developer"
+      ]
+    },
+    "Model Deployment & Monitoring": {
+      "context_scope": "role_sensitive",
+      "career_areas": [
+        "AI & Machine Learning",
+        "Cloud, DevOps & Platform"
+      ],
+      "roles": [
+        "AI Engineer",
+        "AI Architect",
+        "Machine Learning Engineer",
+        "Data Scientist",
+        "Data Engineer",
+        "DevOps Engineer",
+        "Platform Engineer"
+      ]
+    },
+    "Data Quality & Validation": {
+      "context_scope": "role_sensitive",
+      "career_areas": [
+        "Data & Analytics",
+        "AI & Machine Learning"
+      ],
+      "roles": [
+        "Data Engineer",
+        "Analytics Engineer",
+        "Data Architect",
+        "Data Analyst",
+        "Data Scientist",
+        "AI Engineer",
+        "Machine Learning Engineer",
+        "BI Developer",
+        "BI Analyst"
       ]
     }
   }

@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 import pyodbc
 from config.env_loader import load_project_env
+from ingestion.publishers.career_intelligence import OBSERVATION_QUERY, build_career_intelligence
 
 
 # ---------------------------------------------------------
@@ -389,6 +390,12 @@ def publish_role_capability_demand(cursor):
 # PUBLISH SOURCE QUALITY
 # ---------------------------------------------------------
 
+def publish_career_intelligence(cursor):
+    rows = query_to_dicts(cursor, OBSERVATION_QUERY)
+    snapshot = build_career_intelligence(rows, datetime.now(ISTANBUL_TZ).date())
+    write_json("career-intelligence.json", snapshot)
+
+
 def publish_source_quality(cursor):
     query = """
     SELECT *
@@ -440,6 +447,7 @@ def main():
         publish_role_capability_demand(cursor)
 
         publish_source_quality(cursor)
+        publish_career_intelligence(cursor)
 
         print()
         print("=" * 60)

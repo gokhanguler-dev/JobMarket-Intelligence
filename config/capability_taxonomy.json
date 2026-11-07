@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "description": "Capability taxonomy derived from technical job responsibilities. Strong patterns represent explicit capability evidence. Medium patterns represent weaker contextual evidence and should not be used alone without validation.",
 
   "capabilities": [
@@ -526,6 +526,83 @@
         "production support",
         "application support"
       ]
-    }
+    },
+      {
+        "name": "RAG & Retrieval Engineering",
+        "category": "AI & Machine Learning",
+        "strong_patterns": [
+          "build rag pipelines",
+          "develop rag pipelines",
+          "design rag pipelines",
+          "implement rag pipelines",
+          "construct rag document ingestion pipelines",
+          "design rag document ingestion pipelines",
+        "responsible for rag document ingestion",
+        "role focuses on rag document ingestion",
+          "build rag systems",
+          "develop rag systems",
+          "design rag systems",
+          "implement rag systems",
+          "implementing rag systems",
+          "building rag-based applications",
+          "build retrieval-augmented generation systems",
+          "build retrieval augmented generation systems",
+          "build and scale conversational ai and retrieval-augmented generation",
+          "implement retrieval-augmented generation",
+          "rag sistemleri geliştirmek",
+          "rag çözümleri tasarlamak"
+        ],
+        "medium_patterns": [],
+        "explicit_evidence_only": true
+      },
+      {
+        "name": "Model Deployment & Monitoring",
+        "category": "AI & Machine Learning",
+        "strong_patterns": [
+          "deploy machine learning models",
+          "deploy ml models",
+          "deploy trained models",
+        "deploy models to production",
+          "deploy and monitor models",
+          "deploy and monitor machine learning models",
+          "serve machine learning models",
+          "support model deployment",
+          "implement model monitoring",
+          "support model monitoring",
+          "apply mlops best practices to production",
+        "applying mlops best practices to production",
+        "monitor production models",
+        "monitor model drift",
+          "monitor model performance",
+          "monitor model and search-quality metrics",
+          "automate model retraining",
+          "model izleme süreçleri geliştirmek",
+          "makine öğrenmesi modellerini üretime almak"
+        ],
+        "medium_patterns": [],
+        "explicit_evidence_only": true
+      },
+      {
+        "name": "Data Quality & Validation",
+        "category": "Data Engineering",
+        "strong_patterns": [
+          "own data quality",
+          "ensure data quality",
+          "implement data quality checks",
+        "define data quality checks",
+          "build data quality checks",
+          "automate data quality checks",
+          "design data quality rules",
+          "implement data validation rules",
+          "monitor data quality",
+          "support data quality initiatives",
+          "experience with automated testing, data quality validation",
+          "veri kalitesi kontrolleri geliştirmek",
+          "veri kalitesi kuralları tasarlamak",
+          "veri kalitesini izlemek"
+        ],
+        "medium_patterns": [],
+        "explicit_evidence_only": true
+      }
   ]
 }

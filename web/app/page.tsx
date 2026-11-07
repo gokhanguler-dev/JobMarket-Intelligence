@@ -1,3 +1,5 @@
+import { MarketTrends, RoleProfiles, type CareerIntelligence } from "./career-intelligence";
+
 export const dynamic = "force-dynamic";
 
 type PipelineSchedule = {
@@ -60,12 +62,18 @@ async function getMarketData() {
   const path = await import("path");
 
   const dataDirectory = path.join(process.cwd(), "public", "data");
+  const readOptional = (fileName: string) =>
+    fs.readFile(path.join(dataDirectory, fileName), "utf-8").catch((error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") return null;
+      throw error;
+    });
 
   const [
     metadataRaw,
     skillDemandRaw,
     capabilityDemandRaw,
     technologyStackPairsRaw,
+    careerIntelligenceRaw,
   ] = await Promise.all([
     fs.readFile(
       path.join(dataDirectory, "metadata.json"),
@@ -82,23 +90,19 @@ async function getMarketData() {
       "utf-8"
     ),
 
-    fs.readFile(
-      path.join(dataDirectory, "technology-stack-pairs.json"),
-      "utf-8",
-    ).catch((error: NodeJS.ErrnoException) => {
-      if (error.code === "ENOENT") {
-        return "[]";
-      }
-      throw error;
-    }),
+    readOptional("technology-stack-pairs.json"),
+    readOptional("career-intelligence.json"),
   ]);
 
   return {
     metadata: JSON.parse(metadataRaw) as Metadata,
     skills: JSON.parse(skillDemandRaw) as SkillDemand[],
     technologyStackPairs: JSON.parse(
-      technologyStackPairsRaw
+      technologyStackPairsRaw ?? "[]"
     ) as TechnologyStackPair[],
+    careerIntelligence: careerIntelligenceRaw
+      ? JSON.parse(careerIntelligenceRaw) as CareerIntelligence
+      : null,
     capabilities: JSON.parse(
       capabilityDemandRaw
     ) as CapabilityDemand[],
@@ -152,6 +156,7 @@ export default async function Home() {
     skills,
     capabilities,
     technologyStackPairs,
+    careerIntelligence,
   } = await getMarketData();
   const topTechnologyStackPairs = technologyStackPairs.slice(0, 10);
 
@@ -235,6 +240,13 @@ export default async function Home() {
             <a href="#capabilities">
               Capabilities
             </a>
+
+            {careerIntelligence && (
+              <>
+                <a href="#role-profiles">Roles</a>
+                <a href="#market-trends">Trends</a>
+              </>
+            )}
 
             <a href="#career">
               Career Radar
@@ -859,6 +871,13 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {careerIntelligence && (
+        <>
+          <RoleProfiles data={careerIntelligence} />
+          <MarketTrends weeks={careerIntelligence.weeks} />
+        </>
+      )}
 
       {/* ===================================================
           CAREER RADAR

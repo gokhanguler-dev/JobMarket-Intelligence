@@ -1,5 +1,7 @@
 import json
 import re
+from functools import lru_cache
+from html import unescape
 from pathlib import Path
 
 from ingestion.parsers.job_text_parser import clean_html_text
@@ -76,30 +78,61 @@ def normalize_text(text):
     return text.strip()
 
 
+# Preserve sentence and list boundaries for rules that require explicit demand.
+EVIDENCE_BREAKS = re.compile(
+    r"</?(?:p|li|ul|ol|div|h[1-6])\b[^>]*>|<br\b[^>]*>",
+    re.IGNORECASE,
+)
+PREFERENCE = (
+    r"nice to have|preferred qualifications|preferred skills|good to have|"
+    r"bonus points|a plus|an advantage|tercih sebebi|tercihen"
+)
+PREFERENCE_HEADING = re.compile(rf"^(?:{PREFERENCE})(?:\s*:|$)", re.IGNORECASE)
+PREFERENCE_MARKER = re.compile(rf"\b(?:{PREFERENCE})\b", re.IGNORECASE)
+DEMAND_HEADING = re.compile(
+    r"^(?:(?:key )?responsibilities|(?:minimum |required )?qualifications|"
+    r"(?:minimum |required )?requirements|what you(?:'ll| will) do|"
+    r"görev ve sorumluluklar|aranan nitelikler)(?:\s*:|$)",
+    re.IGNORECASE,
+)
+NON_DEMAND_MARKER = re.compile(
+    r"\b(?:familiarity with|awareness of|understanding of|no need to|not required to)\b",
+    re.IGNORECASE,
+)
+
+
+def explicit_demand_text(text):
+    """Keep action evidence separate from preference sections and mentions."""
+    text = EVIDENCE_BREAKS.sub("\n", unescape(text))
+    accepted = []
+    preferred_section = False
+    for fragment in re.split(r"(?<=[.!?])\s+|[\r\n;•●▪]+", text):
+        fragment = normalize_text(fragment)
+        if not fragment:
+            continue
+        if DEMAND_HEADING.match(fragment):
+            preferred_section = False
+        if PREFERENCE_HEADING.match(fragment):
+            preferred_section = True
+        if preferred_section or PREFERENCE_MARKER.search(fragment):
+            continue
+        if not NON_DEMAND_MARKER.search(fragment):
+            accepted.append(fragment)
+    return " . ".join(accepted)
+
+
 # ------------------------------------------------------------
 # PATTERN MATCHING
 # ------------------------------------------------------------
 
+@lru_cache(maxsize=2048)
+def capability_pattern(pattern):
+    escaped = re.escape(pattern.lower().strip())
+    return re.compile(rf"(?<!\w){escaped}(?!\w)", re.IGNORECASE)
+
+
 def pattern_matches(text, pattern):
-
-    pattern = pattern.lower().strip()
-
-    escaped_pattern = re.escape(pattern)
-
-    regex = (
-        rf"(?<!\w)"
-        rf"{escaped_pattern}"
-        rf"(?!\w)"
-    )
-
-    return (
-        re.search(
-            regex,
-            text,
-            flags=re.IGNORECASE
-        )
-        is not None
-    )
+    return capability_pattern(pattern).search(text) is not None
 
 
 def find_matching_patterns(text, patterns):
@@ -349,14 +382,18 @@ def extract_capabilities(
     if not normalized_text:
         return []
 
+    explicit_text = explicit_demand_text(text)
     results = []
 
     for capability in CAPABILITY_TAXONOMY:
 
         capability_name = capability["name"]
+        evidence_text = (
+            explicit_text if capability.get("explicit_evidence_only") else normalized_text
+        )
 
         strong_matches = find_matching_patterns(
-            normalized_text,
+            evidence_text,
             capability.get(
                 "strong_patterns",
                 []
@@ -364,7 +401,7 @@ def extract_capabilities(
         )
 
         medium_matches = find_matching_patterns(
-            normalized_text,
+            evidence_text,
             capability.get(
                 "medium_patterns",
                 []
@@ -437,14 +474,18 @@ def extract_capability_candidates(
     if not normalized_text:
         return []
 
+    explicit_text = explicit_demand_text(text)
     results = []
 
     for capability in CAPABILITY_TAXONOMY:
 
         capability_name = capability["name"]
+        evidence_text = (
+            explicit_text if capability.get("explicit_evidence_only") else normalized_text
+        )
 
         strong_matches = find_matching_patterns(
-            normalized_text,
+            evidence_text,
             capability.get(
                 "strong_patterns",
                 []
@@ -452,7 +493,7 @@ def extract_capability_candidates(
         )
 
         medium_matches = find_matching_patterns(
-            normalized_text,
+            evidence_text,
             capability.get(
                 "medium_patterns",
                 []

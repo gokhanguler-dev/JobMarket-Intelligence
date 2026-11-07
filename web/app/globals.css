@@ -738,6 +738,105 @@ select {
   text-align: right;
 }
 
+.role-evidence-grid,
+.role-evidence-signals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.evidence-panel {
+  padding: clamp(16px, 3vw, 28px);
+}
+
+.evidence-panel h3,
+.evidence-panel h4 {
+  margin: 0;
+}
+
+.evidence-panel p,
+.trend-notes {
+  color: var(--muted-light);
+}
+
+.evidence-signals {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.evidence-signals li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.evidence-panel summary {
+  margin: 16px 0 8px;
+  color: var(--cyan);
+  cursor: pointer;
+}
+
+.trend-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.trend-controls label {
+  display: grid;
+  gap: 6px;
+  min-width: 140px;
+  max-width: 100%;
+  font-size: 13px;
+  color: var(--muted-light);
+}
+
+.trend-controls select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: var(--foreground);
+  background: var(--surface-solid);
+}
+
+.trend-chart {
+  display: block;
+  width: 100%;
+  max-height: 340px;
+  margin-top: 16px;
+}
+
+.trend-chart text {
+  fill: var(--muted-light);
+  font-size: 13px;
+}
+
+.trend-gridline {
+  stroke: var(--border);
+}
+
+.trend-line {
+  stroke: var(--cyan);
+  stroke-width: 2.5;
+}
+
+.trend-dot {
+  fill: var(--cyan);
+}
+
+@media (max-width: 720px) {
+  .role-evidence-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .skill-list {
   display: flex;
   flex-direction: column;
