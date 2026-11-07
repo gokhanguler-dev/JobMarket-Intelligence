@@ -1,0 +1,26 @@
+services:
+  airflow-init:
+    volumes:
+      - ${USERPROFILE}/.dbt:/opt/airflow/.dbt
+
+  airflow-webserver:
+    environment:
+      PYTHONPATH: /opt/airflow/jobmarket
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    volumes:
+      - ${USERPROFILE}/.dbt:/opt/airflow/.dbt
+
+  airflow-scheduler:
+    environment:
+      PYTHONPATH: /opt/airflow/jobmarket
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+
+      SMTP_HOST: ""
+      SMTP_PORT: ""
+      SMTP_USER: ""
+      SMTP_PASSWORD: ""
+      SMTP_MAIL_FROM: ""
+      SMTP_MAIL_TO: ""
+
+    volumes:
+      - ${USERPROFILE}/.dbt:/opt/airflow/.dbt
