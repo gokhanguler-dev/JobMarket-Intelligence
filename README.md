@@ -4,7 +4,7 @@
 
 **Career Radar** is an end-to-end data engineering and career intelligence platform that continuously transforms multi-source technology job postings into structured market intelligence about roles, seniority, technologies, capabilities, companies, and employer demand.
 
-Instead of treating job postings as isolated vacancies, the project treats the **technology job market as a continuously observed dataset**.
+The project preserves each collection as an observation so it can measure demand over time. [Live site](https://techcareerradar.com/) · [Role profiles](https://techcareerradar.com/#role-profiles) · [Weekly trends](https://techcareerradar.com/#market-trends)
 
 The platform currently runs as a cloud-hosted pipeline that collects job postings, preserves historical observations, resolves canonical jobs, classifies technology roles, extracts technology and capability signals, builds analytical marts, and publishes curated data to a public-facing Next.js application.
 
@@ -29,6 +29,9 @@ Career Radar has evolved from a local data engineering project into an operation
 - Seniority classification
 - Technology extraction
 - Capability extraction
+- Technology co-occurrence with support, directional confidence, and lift
+- Data Engineer and AI Engineer role profiles
+- Weekly technology and capability trends from stored posting observations
 - SQL Server dimensional warehouse
 - dbt analytical marts and data-quality tests
 - Apache Airflow orchestration
@@ -38,19 +41,22 @@ Career Radar has evolved from a local data engineering project into an operation
 - Caddy reverse proxy
 - Scheduled autonomous ingestion
 
-### Production Snapshot — October 31, 2026
+### Production Snapshot — November 7, 2026
 
 | Metric | Value |
 |---|---:|
-| Canonical Job Postings | **702** |
-| Historical Job Observations | **10,007** |
-| Technologies | **97** |
-| Capability Definitions | **26** |
-| Job ↔ Technology Relationships | **772** |
-| Job ↔ Capability Relationships | **210** |
-| Data Sources | **6** |
+| Canonical Job Postings | **762** |
+| Postings Classified as Tech | **358** |
+| Historical Job Observations | **18,711** |
+| Companies | **87** |
+| Technologies | **100** |
+| Capability Definitions | **29** |
+| Job ↔ Technology Relationships | **919** |
+| Job ↔ Capability Relationships | **247** |
+| Technology Pairs | **913** |
+| Data Sources | **7** |
 
-> The production dataset changes continuously as scheduled pipelines collect new market observations.
+> The figures above describe the November 7 snapshot. Scheduled Airflow runs refresh the public data. [Current metadata](https://techcareerradar.com/data/metadata.json)
 
 ---
 
@@ -213,7 +219,7 @@ This allows the complete pipeline to operate independently of a developer workst
 
 # Data Sources
 
-Career Radar currently integrates **six source families / platforms** through dedicated adapters.
+Career Radar currently integrates **seven source families** through dedicated adapters.
 
 | Source | Integration Strategy |
 |---|---|
@@ -223,18 +229,20 @@ Career Radar currently integrates **six source families / platforms** through de
 | Greenhouse | Greenhouse-hosted career boards |
 | Workday | Workday-hosted career platform |
 | SmartRecruiters | SmartRecruiters-hosted career sites |
+| Workable | Published job descriptions from the Oredata and Vertigo Games boards, filtered for Türkiye |
 
-### Current Canonical Job Distribution
+### Canonical Job Distribution — November 7, 2026
 
 | Source | Canonical Jobs |
 |---|---:|
-| Jooble | 294 |
-| Lever | 237 |
-| SmartRecruiters | 70 |
-| Workday | 41 |
-| Akbank | 32 |
+| Jooble | 297 |
+| Lever | 258 |
+| SmartRecruiters | 75 |
+| Workday | 42 |
+| Akbank | 36 |
 | Greenhouse | 28 |
-| **Total** | **702** |
+| Workable | 26 |
+| **Total** | **762** |
 
 The architecture intentionally uses **source-specific adapters** while enforcing a shared downstream staging contract.
 
@@ -276,6 +284,7 @@ Lever
 Greenhouse
 Workday
 SmartRecruiters
+Workable
 ```
 
 ## Jooble Pipeline
@@ -386,12 +395,7 @@ becomes:
 
 This prevents repeated collection from artificially inflating vacancy counts while preserving historical market state.
 
-As of the current production snapshot:
-
-```text
-702 canonical jobs
-10,007 historical observations
-```
+Each observation references the raw posting captured during collection. The historical publisher uses that stored title and description when calculating weekly demand.
 
 This model supports both:
 
@@ -470,7 +474,7 @@ Technology Market
 
 Career Radar analyzes job descriptions using a configuration-driven technology taxonomy.
 
-The taxonomy currently supports more than 100 technology definitions, with **97 technologies currently observed in production data**.
+The November 7 production snapshot contains **100 observed technologies**.
 
 Examples include:
 
@@ -504,11 +508,7 @@ Technology extraction enables analysis such as:
 - historical technology trends
 - market breadth
 
-The warehouse currently contains:
-
-```text
-772 Job ↔ Technology relationships
-```
+The technology-pair table ranks pairs by shared postings. Support is the share of postings containing both technologies. Directional confidence measures how often one technology appears among postings containing the other. Lift compares observed co-occurrence with the expected frequency under independence. [Live technology pairs](https://techcareerradar.com/#technology-pairs)
 
 ---
 
@@ -522,37 +522,11 @@ Capabilities answer:
 
 > **What are employers expecting professionals to be able to do?**
 
-For example:
-
-```text
-Technology Signals
-------------------
-Airflow
-AWS
-Terraform
-Spark
-GitHub Actions
-```
-
-can provide evidence for capabilities such as:
-
-```text
-Data Pipeline Engineering
-Data Workflow Automation
-Cloud Infrastructure Engineering
-Infrastructure Automation
-CI/CD & Release Engineering
-Distributed Systems Engineering
-```
-
-Career Radar therefore includes a separate **Capability Intelligence** layer.
+A Data Engineer posting may mention Airflow and describe responsibility for building data pipelines. The technology taxonomy records Airflow. The capability rules use the responsibility and role context to identify Data Pipeline Engineering.
 
 ## Capability Taxonomy
 
-Capability Taxonomy V1.2 currently contains:
-
-- **26 capabilities**
-- **7 capability categories**
+The production taxonomy has **29 capabilities** across **7 categories**. The catalog is versioned separately from the extraction context rules.
 
 Current capabilities include:
 
@@ -567,6 +541,9 @@ Data Product Development
 Data Analysis
 AI/ML Engineering
 AI Workflow Engineering
+RAG & Retrieval Engineering
+Model Deployment & Monitoring
+Data Quality & Validation
 Application Development
 Backend Development
 Frontend Development
@@ -607,14 +584,7 @@ Context-aware extraction helps reduce false positives caused by:
 - ambiguous keywords
 - terminology with different meanings across roles
 
-Capability Intelligence is now integrated into the production pipeline.
-
-Current production warehouse:
-
-```text
-DimCapability                   = 26
-BridgeJobPostingCapability      = 210 relationships
-```
+The three latest capabilities require explicit evidence in a relevant role. For example, an instruction to build a RAG pipeline can qualify. A general mention of RAG or a preference-only section is excluded by the pilot rules. [Capability taxonomy](config/capability_taxonomy.json) · [Role context](config/capability_context.json)
 
 ---
 
@@ -700,7 +670,7 @@ Monitors ingestion and source coverage.
 
 ## `mart_skill_trend`
 
-Tracks observed technology demand over time.
+Tracks daily observed technology demand using the warehouse skill relationships. The public weekly trend separately reprocesses the raw text associated with each observation.
 
 ## `mart_career_area_overview`
 
@@ -714,6 +684,10 @@ Measures market demand across normalized roles and seniority levels.
 
 Measures capability demand within normalized technology roles.
 
+## `mart_technology_stack_pairs`
+
+Measures co-occurrence across source-level postings and calculates support, confidence in each direction, and lift. Tests cover pair uniqueness, pair ordering, count consistency, percentage bounds, and non-null metrics.
+
 dbt is also used as a data-quality layer.
 
 Production builds validate:
@@ -725,7 +699,7 @@ Production builds validate:
 - model-level integrity
 - taxonomy relationships
 
-A full production build currently executes more than 100 models/tests successfully.
+The November 7 release passed **22 Python tests** and a full dbt build with **15 models and 103 data tests**. Run the Python suite from the repository root with `python -m unittest discover -s tests`. Run `dbt build` from `dbt/jobmarket` against the configured SQL Server target.
 
 ---
 
@@ -741,6 +715,7 @@ Lever Collector ──────────► Lever RAW Loader ────�
 Greenhouse Collector ─────► Greenhouse RAW Loader ───────┤
 Workday Collector ─────────► Workday RAW Loader ─────────┤
 SmartRecruiters Collector ─► SmartRecruiters RAW Loader ─┤
+Workable Collector ─────────► Workable RAW Loader ────────┤
                                                          │
                                                          ▼
                                                 Staging Transform
@@ -820,7 +795,7 @@ SQL Server
 Analytical Marts
     │
     ▼
-Python Publisher
+Python Publisher ◄──── Stored posting observations for weekly trends
     │
     ▼
 Curated JSON
@@ -837,8 +812,10 @@ skill-demand.json
 role-skill-demand.json
 company-tech-stack.json
 skill-trend.json
+technology-stack-pairs.json
 role-capability-demand.json
 source-quality.json
+career-intelligence.json
 ```
 
 This creates a clear boundary between:
@@ -862,9 +839,20 @@ TypeScript
 Tailwind CSS
 ```
 
-The application currently exposes market intelligence generated by the production data pipeline.
+The application exposes technology demand, capability demand, technology pairs, role profiles, and weekly market trends. It reads the published JSON on request, so a successful scheduled publish refreshes the data without a web image rebuild. [Live application](https://techcareerradar.com/)
 
-The serving architecture is designed so that newly published analytical data can be reflected without rebuilding the entire analytical platform.
+## Role Profiles
+
+The Data Engineer and AI Engineer cards summarize the latest stored observation for each posting seen in the last 30 days. They show distinct posting, employer, and source counts alongside the technologies mentioned and capabilities detected for each role. The November 7 snapshot contains 34 Data Engineer and 32 AI Engineer postings. [Live role profiles](https://techcareerradar.com/#role-profiles)
+
+## Weekly Market Trends
+
+Weekly cohorts use Monday starts in the Europe/Istanbul timezone.
+
+- **Observed that week** counts a posting once per week and uses its latest stored title and description in that week.
+- **First seen that week** counts a posting in its first observed week and uses its first stored title and description. The opening week includes the inventory captured when collection began.
+
+The selected signal's share uses the number of postings in the selected cohort as its denominator. The chart exposes the underlying counts, source coverage, and observation days. It starts with the first retained observations on October 16, 2026, and refreshes whenever the pipeline publishes a new snapshot. Historical text is evaluated with the current role classification and extraction rules. The same vacancy may appear in multiple sources, and changes in source coverage can affect comparisons. [Live trends](https://techcareerradar.com/#market-trends) · [Published dataset](https://techcareerradar.com/data/career-intelligence.json) · [History builder](ingestion/publishers/career_intelligence.py)
 
 The product direction is:
 
@@ -1325,6 +1313,7 @@ Potential future product features include:
 - [x] Greenhouse ingestion
 - [x] Workday ingestion
 - [x] SmartRecruiters ingestion
+- [x] Workable ingestion for Oredata and Vertigo Games
 - [x] Standardized staging contract
 - [x] Canonical job model
 - [x] Historical observation model
@@ -1344,12 +1333,15 @@ Potential future product features include:
 - [x] Technology demand marts
 - [x] Role-specific demand
 - [x] Company technology stacks
-- [x] Historical technology trends
+- [x] Technology co-occurrence mart and public pair table
+- [x] Weekly technology demand from stored observations
 
 ## Phase 4 — Capability Intelligence
 
 - [x] Capability taxonomy
 - [x] Context-aware capability extraction
+- [x] Explicit evidence rules for RAG, model deployment and monitoring, and data quality
+- [x] Weekly capability demand from stored observations
 - [x] `DimCapability`
 - [x] `BridgeJobPostingCapability`
 - [x] Role-capability demand mart
@@ -1371,7 +1363,7 @@ Potential future product features include:
 - [x] Cloud Jooble pipeline acceptance
 - [ ] Production executor hardening
 - [ ] Reboot / recovery validation
-- [ ] Domain and automatic HTTPS
+- [x] Public domain and HTTPS
 - [ ] Stronger collector failure semantics
 
 ## Phase 6 — Professional Skill Intelligence
@@ -1385,7 +1377,8 @@ Potential future product features include:
 
 ## Phase 7 — Recommendation Engine
 
-- [ ] Role profile model
+- [x] Public Data Engineer and AI Engineer role profiles
+- [ ] Personalized role profile model
 - [ ] Skill-gap model
 - [ ] Capability-gap model
 - [ ] Market breadth scoring
