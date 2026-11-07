@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "account": "oredata",
+      "company": "Oredata",
+      "enabled": true
+    },
+    {
+      "account": "vertigogames",
+      "company": "Vertigo Games",
+      "enabled": true
+    }
+  ]
+}

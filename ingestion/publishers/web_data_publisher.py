@@ -228,6 +228,7 @@ def publish_metadata(cursor):
                 "Greenhouse",
                 "Workday",
                 "SmartRecruiters",
+                "Workable",
             ],
             "schedule": "Every day · 08:00",
             "next_run": next_daily_run.isoformat(),

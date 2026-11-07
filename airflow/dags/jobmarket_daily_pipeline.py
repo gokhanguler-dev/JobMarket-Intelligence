@@ -98,6 +98,14 @@ with DAG(
         ),
     )
 
+    collect_workable = BashOperator(
+        task_id="collect_workable",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m ingestion.collectors.workable_collector"
+        ),
+    )
+
     # --------------------------------------------------------
     # 2. LOAD RAW
     # --------------------------------------------------------
@@ -139,6 +147,16 @@ with DAG(
         bash_command=(
             f"cd {PROJECT_DIR} && "
             "python -m ingestion.loaders.smartrecruiters_raw_loader"
+        ),
+    )
+
+    load_workable_raw = BashOperator(
+        task_id="load_workable_raw",
+        # Load completed snapshots even if the latest collection failed.
+        trigger_rule="all_done",
+        bash_command=(
+            f"cd {PROJECT_DIR} && "
+            "python -m ingestion.loaders.workable_raw_loader"
         ),
     )
 
@@ -255,6 +273,7 @@ with DAG(
     collect_greenhouse >> load_greenhouse_raw
     collect_workday >> load_workday_raw
     collect_smartrecruiters >> load_smartrecruiters_raw
+    collect_workable >> load_workable_raw
 
     [
         load_akbank_raw,
@@ -262,6 +281,7 @@ with DAG(
         load_greenhouse_raw,
         load_workday_raw,
         load_smartrecruiters_raw,
+        load_workable_raw,
     ] >> transform_staging
 
     (

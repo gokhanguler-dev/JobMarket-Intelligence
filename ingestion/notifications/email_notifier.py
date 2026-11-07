@@ -22,6 +22,7 @@ SOURCE_TASKS = {
     "collect_greenhouse": "Greenhouse",
     "collect_workday": "Workday",
     "collect_smartrecruiters": "SmartRecruiters",
+    "collect_workable": "Workable",
     "collect_jooble": "Jooble",
 }
 
