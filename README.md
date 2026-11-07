@@ -851,6 +851,12 @@ The audit distinguishes a Türkiye location, remote work from Türkiye, a countr
 
 The audit groups records with the same posting title and URL after removing known tracking parameters. It also groups an aggregator listing with a single direct posting when the title and location are compatible and at least two substantive excerpts match. When employer identity is unavailable, a specific title is also required. Possible duplicates stay in the sample and appear in the audit counts. The role cards report the source mix and how many eligible postings contain capability evidence or a strong contextual match. The weekly market trend keeps its source-level counting rules. [Role audit implementation](ingestion/publishers/role_posting_audit.py)
 
+## Recently Seen Employer Postings
+
+The role opportunity cards show Türkiye-eligible Data Engineer and AI Engineer postings that were present in the latest validated employer-board snapshot and observed on at least two distinct days in a ten-day window. The count uses stored extraction dates in the Europe/Istanbul timezone. Repeated collection within a day contributes one observation day.
+
+The pilot uses Lever, Greenhouse, Workable, and Workday. A newer empty or incomplete snapshot does not bring back vacancies from an older snapshot. Cards expire 48 hours after the board check and link to the original posting. The cards expose detected signals and source timestamps alongside the day count. Use the employer page to verify application status and deadlines. [Opportunity publisher](ingestion/publishers/role_opportunities.py)
+
 ## Weekly Market Trends
 
 Weekly cohorts use Monday starts in the Europe/Istanbul timezone.

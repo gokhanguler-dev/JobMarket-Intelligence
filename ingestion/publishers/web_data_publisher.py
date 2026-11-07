@@ -9,6 +9,9 @@ from zoneinfo import ZoneInfo
 import pyodbc
 from config.env_loader import load_project_env
 from ingestion.publishers.career_intelligence import OBSERVATION_QUERY, build_career_intelligence
+from ingestion.publishers.role_opportunities import (
+    load_latest_boards, load_opportunity_rows, summarize_opportunities,
+)
 
 
 # ---------------------------------------------------------
@@ -392,7 +395,11 @@ def publish_role_capability_demand(cursor):
 
 def publish_career_intelligence(cursor):
     rows = query_to_dicts(cursor, OBSERVATION_QUERY)
-    snapshot = build_career_intelligence(rows, datetime.now(ISTANBUL_TZ).date())
+    now = datetime.now(ISTANBUL_TZ)
+    snapshot = build_career_intelligence(rows, now.date())
+    boards = load_latest_boards(now)
+    opportunity_rows = load_opportunity_rows(cursor, boards, now)
+    snapshot["opportunities"] = summarize_opportunities(opportunity_rows, boards, now)
     write_json("career-intelligence.json", snapshot)
 
 

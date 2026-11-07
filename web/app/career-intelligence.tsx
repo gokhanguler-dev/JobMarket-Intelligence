@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { OpportunityReport } from "./role-opportunities";
 
 type Signal = { name: string; jobs: number; companies?: number };
 type Group = "technologies" | "capabilities";
@@ -36,6 +37,7 @@ export type CareerIntelligence = {
   profile_start: string;
   profile_end: string;
   roles: RoleProfile[];
+  opportunities?: OpportunityReport;
   weeks: {
     start: string;
     first_day: string;
@@ -166,6 +168,9 @@ export function RoleProfiles({ data }: { data: CareerIntelligence }) {
             many postings and identified employers provided evidence.
           </p>
         </div>
+        {data.opportunities && (
+          <p><a className="opportunity-link" href="#role-opportunities">Browse recently seen postings ↓</a></p>
+        )}
         {audited && (
           <div className="trend-controls role-sample-controls">
             <label>

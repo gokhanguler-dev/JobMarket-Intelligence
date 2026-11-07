@@ -114,10 +114,17 @@ def fetch_all_job_summaries(session, source):
             offset=offset,
         )
 
-        batch = data.get("jobPostings", [])
-
+        batch = data.get("jobPostings")
+        reported_total = data.get("total")
+        if (
+            not isinstance(batch, list) or type(reported_total) is not int
+            or reported_total < 0 or not all(isinstance(job, dict) for job in batch)
+        ):
+            raise ValueError("Invalid Workday posting list")
+        if total is not None and reported_total != total:
+            raise ValueError("Workday posting total changed during pagination")
         if total is None:
-            total = data.get("total", 0)
+            total = reported_total
 
             print(
                 f"[INFO] {source['company']} "
@@ -140,6 +147,9 @@ def fetch_all_job_summaries(session, source):
         if offset >= total:
             break
 
+    paths = {job.get("externalPath") for job in jobs}
+    if len(jobs) != total or len(paths) != len(jobs) or not all(paths):
+        raise ValueError(f"Incomplete Workday posting list. Expected {total}, got {len(jobs)}.")
     return jobs
 
 
@@ -254,6 +264,7 @@ def collect_source(source):
                 "location_facets",
                 [],
             ),
+            "list_complete": True,
             "list_result_count": len(summaries),
             "detail_result_count": len(jobs),
             "failed_detail_count": len(failed_details),

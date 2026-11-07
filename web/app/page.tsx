@@ -1,4 +1,5 @@
 import { MarketTrends, RoleProfiles, type CareerIntelligence } from "./career-intelligence";
+import { RoleOpportunities } from "./role-opportunities";
 
 export const dynamic = "force-dynamic";
 
@@ -94,15 +95,23 @@ async function getMarketData() {
     readOptional("career-intelligence.json"),
   ]);
 
+  const careerIntelligence = careerIntelligenceRaw
+    ? JSON.parse(careerIntelligenceRaw) as CareerIntelligence
+    : null;
+  if (careerIntelligence?.opportunities) {
+    const requestedAt = Date.now();
+    careerIntelligence.opportunities.jobs = careerIntelligence.opportunities.jobs.filter(
+      (job) => Date.parse(job.expires_at) > requestedAt,
+    );
+  }
+
   return {
     metadata: JSON.parse(metadataRaw) as Metadata,
     skills: JSON.parse(skillDemandRaw) as SkillDemand[],
     technologyStackPairs: JSON.parse(
       technologyStackPairsRaw ?? "[]"
     ) as TechnologyStackPair[],
-    careerIntelligence: careerIntelligenceRaw
-      ? JSON.parse(careerIntelligenceRaw) as CareerIntelligence
-      : null,
+    careerIntelligence,
     capabilities: JSON.parse(
       capabilityDemandRaw
     ) as CapabilityDemand[],
@@ -159,6 +168,7 @@ export default async function Home() {
     careerIntelligence,
   } = await getMarketData();
   const topTechnologyStackPairs = technologyStackPairs.slice(0, 10);
+  const opportunities = careerIntelligence?.opportunities;
 
   // -------------------------------------------------------
   // TECHNOLOGY DEMAND
@@ -875,6 +885,7 @@ export default async function Home() {
       {careerIntelligence && (
         <>
           <RoleProfiles data={careerIntelligence} />
+          {opportunities && <RoleOpportunities report={opportunities} />}
           <MarketTrends weeks={careerIntelligence.weeks} />
         </>
       )}

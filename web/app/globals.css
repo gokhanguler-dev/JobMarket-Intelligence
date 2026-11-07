@@ -782,6 +782,49 @@ select {
   cursor: pointer;
 }
 
+.opportunity-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.opportunity-card p {
+  margin: 0;
+}
+
+.opportunity-card .opportunity-employer,
+.opportunity-link {
+  color: var(--cyan);
+}
+
+.opportunity-observed {
+  padding: 10px 0;
+  border-block: 1px solid var(--border);
+}
+
+.opportunity-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.opportunity-signals li {
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.opportunity-link {
+  align-self: flex-start;
+  margin-top: auto;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 .role-sample-controls {
   margin-bottom: 18px;
 }
