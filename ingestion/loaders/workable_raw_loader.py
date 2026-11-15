@@ -6,6 +6,7 @@ from ingestion.collectors.workable_collector import RAW_DIR
 from ingestion.loaders.dwh_loader import get_connection
 from ingestion.loaders.greenhouse_raw_loader import clean_html_text
 from ingestion.loaders.lever_raw_loader import parse_iso_datetime
+from ingestion.loaders.raw_checkpoint import run_incremental
 
 
 TURKEY_COUNTRIES = {"tr", "tur", "turkey", "türkiye", "turkiye"}
@@ -29,14 +30,16 @@ def turkey_location(job):
     return None
 
 
-def load_file(cursor, path):
-    snapshot = json.loads(path.read_text(encoding="utf-8"))
+def load_file(cursor, path, snapshot=None):
+    reconcile = snapshot is not None
+    snapshot = snapshot if reconcile else json.loads(path.read_text(encoding="utf-8"))
     metadata = snapshot["metadata"]
     account = metadata["source_account"]
     company = metadata["company"]
     extracted_at = parse_iso_datetime(metadata["extracted_at"])
     inserted = 0
     skipped = 0
+    updated = 0
 
     for job in snapshot["response"]["jobs"]:
         location = turkey_location(job)
@@ -52,6 +55,22 @@ def load_file(cursor, path):
         published_at = parse_iso_datetime(job.get("published_on") or job.get("created_at"))
         if published_at is not None and published_at.tzinfo is None:
             published_at = published_at.replace(tzinfo=timezone.utc)
+
+        if reconcile:
+            # Reconcile corrected files in place while preserving their observation IDs.
+            cursor.execute("""
+                UPDATE stg.JobPostingRaw
+                SET Source = ?, Company = ?, JobTitle = ?, JobLocation = ?, Snippet = ?,
+                    Description = ?, EmploymentType = ?, WorkModel = ?, JobLink = ?,
+                    SourceCreatedAt = ?, ExtractedAt = ?
+                WHERE SourceSystem = 'Workable' AND SourceJobID = ? AND RawFileName = ?
+            """, account, company, title, location, description, description,
+                job.get("employment_type") or None,
+                "Remote" if job.get("telecommuting") is True else None,
+                link, published_at, extracted_at, source_job_id, path.name)
+            if cursor.rowcount:
+                updated += cursor.rowcount
+                continue
 
         cursor.execute(
             """
@@ -87,10 +106,15 @@ def load_file(cursor, path):
         )
         inserted += cursor.rowcount
 
+    if reconcile:
+        return inserted, updated, skipped
     return inserted, skipped
 
 
 def main():
+    if run_incremental(RAW_DIR, "workable_*.json", "Workable", get_connection, load_file):
+        return
+
     files = sorted(RAW_DIR.glob("workable_*.json"))
     if not files:
         print("No Workable RAW files found.")

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pyodbc
 from config.env_loader import load_project_env
+from ingestion.loaders.raw_checkpoint import run_incremental
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -113,13 +114,8 @@ def build_full_text(job):
     return "\n".join(parts)
 
 
-def load_file(cursor, filepath):
-    with open(
-        filepath,
-        "r",
-        encoding="utf-8"
-    ) as file:
-        data = json.load(file)
+def load_file(cursor, filepath, snapshot=None):
+    data = snapshot if snapshot is not None else json.loads(filepath.read_text(encoding="utf-8"))
 
     metadata = data.get(
         "metadata",
@@ -203,7 +199,7 @@ def load_file(cursor, filepath):
             """
             SELECT RawJobPostingID
             FROM stg.JobPostingRaw
-            WHERE SourceSystem = ?
+            WHERE SourceSystem = CONVERT(varchar(50), ?)
               AND SourceJobID = ?
               AND RawFileName = ?
             """,
@@ -330,6 +326,9 @@ def load_file(cursor, filepath):
 
 
 def main():
+    if run_incremental(RAW_DIR, "lever_*.json", "Lever", get_connection, load_file):
+        return
+
     files = sorted(
         RAW_DIR.glob(
             "lever_*.json"

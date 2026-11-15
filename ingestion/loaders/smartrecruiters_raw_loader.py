@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pyodbc
 from config.env_loader import load_project_env
+from ingestion.loaders.raw_checkpoint import run_incremental
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -194,9 +195,8 @@ def get_work_model(detail, summary):
     return None
 
 
-def load_file(cursor, file_path):
-    with open(file_path, "r", encoding="utf-8") as f:
-        payload = json.load(f)
+def load_file(cursor, file_path, snapshot=None):
+    payload = snapshot if snapshot is not None else json.loads(file_path.read_text(encoding="utf-8"))
 
     metadata = payload.get("metadata", {})
     response = payload.get("response", {})
@@ -291,7 +291,7 @@ def load_file(cursor, file_path):
             """
             SELECT COUNT(*)
             FROM stg.JobPostingRaw
-            WHERE SourceSystem = ?
+            WHERE SourceSystem = CONVERT(varchar(50), ?)
               AND SourceJobID = ?
               AND RawFileName = ?
             """,
@@ -321,7 +321,7 @@ def load_file(cursor, file_path):
                     SourceUpdatedAt = ?,
                     ExtractedAt = ?,
                     Source = ?
-                WHERE SourceSystem = ?
+                WHERE SourceSystem = CONVERT(varchar(50), ?)
                   AND SourceJobID = ?
                   AND RawFileName = ?
                 """,
@@ -408,6 +408,9 @@ def load_file(cursor, file_path):
 
 
 def main():
+    if run_incremental(RAW_DIR, "smartrecruiters_*.json", "SmartRecruiters", get_connection, load_file):
+        return
+
     raw_files = sorted(
         RAW_DIR.glob("smartrecruiters_*.json")
     )

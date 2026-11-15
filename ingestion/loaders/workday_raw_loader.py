@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pyodbc
 from config.env_loader import load_project_env
+from ingestion.loaders.raw_checkpoint import run_incremental
 
 
 # ---------------------------------------------------------
@@ -201,13 +202,8 @@ def get_job_link(metadata, summary, detail):
 # LOAD ONE RAW FILE
 # ---------------------------------------------------------
 
-def load_file(cursor, raw_file):
-    with open(
-        raw_file,
-        "r",
-        encoding="utf-8",
-    ) as file:
-        payload = json.load(file)
+def load_file(cursor, raw_file, snapshot=None):
+    payload = snapshot if snapshot is not None else json.loads(raw_file.read_text(encoding="utf-8"))
 
     metadata = payload.get(
         "metadata",
@@ -301,7 +297,7 @@ def load_file(cursor, raw_file):
             """
             SELECT COUNT(*)
             FROM stg.JobPostingRaw
-            WHERE SourceSystem = ?
+            WHERE SourceSystem = CONVERT(varchar(50), ?)
               AND SourceJobID = ?
               AND RawFileName = ?
             """,
@@ -328,7 +324,7 @@ def load_file(cursor, raw_file):
                     SourceCreatedAt = ?,
                     SourceUpdatedAt = ?,
                     ExtractedAt = ?
-                WHERE SourceSystem = ?
+                WHERE SourceSystem = CONVERT(varchar(50), ?)
                   AND SourceJobID = ?
                   AND RawFileName = ?
                 """,
@@ -417,6 +413,9 @@ def load_file(cursor, raw_file):
 # ---------------------------------------------------------
 
 def main():
+    if run_incremental(RAW_DIR, "workday_*.json", "Workday", get_connection, load_file):
+        return
+
     raw_files = sorted(
         RAW_DIR.glob("workday_*.json")
     )
